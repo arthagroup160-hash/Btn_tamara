@@ -1,0 +1,2959 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TAMARA — Tabungan & Pinjaman Rakyat</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --hijau: #1a6b3c;
+  --hijau-tua: #0d3d21;
+  --hijau-muda: #2d9b5a;
+  --hijau-cerah: #4caf78;
+  --emas: #c9a227;
+  --emas-muda: #f0cc6a;
+  --emas-pucat: #fdf3d0;
+  --krem: #faf6ed;
+  --krem-gelap: #ede5cc;
+  --putih: #ffffff;
+  --hitam: #0f1a13;
+  --abu: #6b7a6e;
+  --abu-muda: #e8ede9;
+  --merah: #c0392b;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Crimson Pro', Georgia, serif;
+  background: var(--krem);
+  color: var(--hitam);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ===== PATTERN BG ===== */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    radial-gradient(circle at 20% 20%, rgba(26,107,60,0.04) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(201,162,39,0.04) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ===== NAV ===== */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 1000;
+  background: rgba(13,61,33,0.97);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(201,162,39,0.3);
+}
+.nav-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+}
+.nav-logo {
+  font-family: 'Playfair Display', serif;
+  font-size: 24px;
+  font-weight: 900;
+  color: var(--emas-muda);
+  letter-spacing: 2px;
+  cursor: pointer;
+}
+.nav-logo span {
+  display: block;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 9px;
+  color: rgba(255,255,255,0.4);
+  letter-spacing: 3px;
+  font-weight: 400;
+  text-transform: uppercase;
+  margin-top: -2px;
+}
+.nav-links {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+.nav-link {
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  color: rgba(255,255,255,0.7);
+  cursor: pointer;
+  transition: all 0.2s;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border: none;
+  background: none;
+}
+.nav-link:hover { color: var(--emas-muda); background: rgba(201,162,39,0.1); }
+.nav-link.active { color: var(--emas-muda); background: rgba(201,162,39,0.15); }
+.nav-lang {
+  display: flex;
+  gap: 4px;
+  margin-left: 16px;
+  border-left: 1px solid rgba(255,255,255,0.15);
+  padding-left: 16px;
+}
+.lang-btn {
+  padding: 4px 8px;
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 4px;
+  background: none;
+  color: rgba(255,255,255,0.5);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.lang-btn.active { border-color: var(--emas); color: var(--emas-muda); background: rgba(201,162,39,0.15); }
+
+.nav-admin-btn {
+  padding: 8px 16px;
+  background: var(--emas);
+  color: var(--hijau-tua);
+  border: none;
+  border-radius: 6px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-left: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.nav-admin-btn:hover { background: var(--emas-muda); transform: translateY(-1px); }
+
+/* ===== PAGES ===== */
+.page { display: none; min-height: 100vh; padding-top: 64px; position: relative; z-index: 1; }
+.page.active { display: block; animation: fadeIn 0.4s ease; }
+@keyframes fadeIn { from { opacity:0; transform: translateY(10px); } to { opacity:1; transform: translateY(0); } }
+
+/* ===== HERO ===== */
+.hero {
+  min-height: calc(100vh - 64px);
+  display: flex;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, var(--hijau-tua) 0%, var(--hijau) 60%, #1e7a42 100%);
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-linear-gradient(45deg, transparent, transparent 40px, rgba(255,255,255,0.01) 40px, rgba(255,255,255,0.01) 41px),
+    repeating-linear-gradient(-45deg, transparent, transparent 40px, rgba(255,255,255,0.01) 40px, rgba(255,255,255,0.01) 41px);
+}
+.hero-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+}
+.hero-orb-1 { width: 500px; height: 500px; background: rgba(201,162,39,0.15); top: -100px; right: -100px; }
+.hero-orb-2 { width: 300px; height: 300px; background: rgba(255,255,255,0.03); bottom: 50px; left: -50px; }
+
+.hero-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 80px 24px;
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: center;
+}
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(201,162,39,0.2);
+  border: 1px solid rgba(201,162,39,0.4);
+  border-radius: 30px;
+  padding: 6px 16px;
+  margin-bottom: 24px;
+}
+.hero-badge-dot { width: 6px; height: 6px; background: var(--emas); border-radius: 50%; animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.4; } }
+.hero-badge-text {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  color: var(--emas-muda);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+.hero-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(48px, 6vw, 80px);
+  font-weight: 900;
+  color: var(--emas-muda);
+  line-height: 1.05;
+  letter-spacing: -1px;
+  margin-bottom: 8px;
+}
+.hero-subtitle {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(18px, 2.5vw, 28px);
+  color: rgba(255,255,255,0.7);
+  font-style: italic;
+  font-weight: 400;
+  margin-bottom: 24px;
+}
+.hero-desc {
+  font-size: 18px;
+  color: rgba(255,255,255,0.65);
+  line-height: 1.7;
+  margin-bottom: 40px;
+  max-width: 480px;
+}
+.hero-cta {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.btn-primary {
+  padding: 14px 28px;
+  background: var(--emas);
+  color: var(--hijau-tua);
+  border: none;
+  border-radius: 8px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+.btn-primary:hover { background: var(--emas-muda); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(201,162,39,0.4); }
+.btn-outline {
+  padding: 14px 28px;
+  background: transparent;
+  color: rgba(255,255,255,0.8);
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 8px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.3s;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+.btn-outline:hover { border-color: var(--emas); color: var(--emas-muda); }
+
+/* HERO STATS */
+.hero-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.stat-card {
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 16px;
+  padding: 24px;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s;
+}
+.stat-card:hover { background: rgba(255,255,255,0.1); transform: translateY(-4px); }
+.stat-icon { font-size: 28px; margin-bottom: 12px; }
+.stat-value {
+  font-family: 'Playfair Display', serif;
+  font-size: 32px;
+  font-weight: 900;
+  color: var(--emas-muda);
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.stat-label {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  color: rgba(255,255,255,0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+/* ===== SECTIONS ===== */
+.section {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 80px 24px;
+}
+.section-tag {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  color: var(--hijau-muda);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 12px;
+}
+.section-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(32px, 4vw, 52px);
+  font-weight: 900;
+  color: var(--hijau-tua);
+  line-height: 1.1;
+  margin-bottom: 16px;
+}
+.section-desc {
+  font-size: 18px;
+  color: var(--abu);
+  line-height: 1.7;
+  max-width: 600px;
+  margin-bottom: 48px;
+}
+
+/* FEATURES */
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-top: 48px;
+}
+.feature-card {
+  background: var(--putih);
+  border-radius: 20px;
+  padding: 32px;
+  border: 1px solid var(--krem-gelap);
+  transition: all 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+.feature-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--hijau), var(--emas));
+}
+.feature-card:hover { transform: translateY(-6px); box-shadow: 0 20px 40px rgba(26,107,60,0.1); }
+.feature-icon { font-size: 40px; margin-bottom: 20px; }
+.feature-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--hijau-tua);
+  margin-bottom: 12px;
+}
+.feature-desc { font-size: 16px; color: var(--abu); line-height: 1.6; }
+
+/* ===== TENTANG ===== */
+.tentang-hero {
+  background: var(--hijau-tua);
+  padding: 80px 24px;
+  text-align: center;
+}
+.tentang-hero h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(36px, 5vw, 64px);
+  color: var(--emas-muda);
+  margin-bottom: 16px;
+}
+.tentang-hero p { font-size: 20px; color: rgba(255,255,255,0.6); max-width: 600px; margin: 0 auto; }
+
+.about-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  align-items: center;
+  margin-top: 64px;
+}
+.about-text h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 36px;
+  font-weight: 700;
+  color: var(--hijau-tua);
+  margin-bottom: 20px;
+}
+.about-text p { font-size: 17px; color: var(--abu); line-height: 1.8; margin-bottom: 16px; }
+
+.akad-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+.akad-card {
+  background: var(--putih);
+  border-radius: 16px;
+  padding: 24px;
+  border-left: 4px solid var(--hijau-muda);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+}
+.akad-card.emas { border-left-color: var(--emas); }
+.akad-name {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--hijau);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+}
+.akad-card.emas .akad-name { color: var(--emas); }
+.akad-desc { font-size: 15px; color: var(--abu); line-height: 1.6; }
+
+/* ===== CARA DAFTAR ===== */
+.steps-wrap {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+  margin-top: 48px;
+}
+.step-card {
+  text-align: center;
+  position: relative;
+}
+.step-card:not(:last-child)::after {
+  content: '→';
+  position: absolute;
+  right: -16px;
+  top: 28px;
+  color: var(--emas);
+  font-size: 20px;
+}
+.step-num {
+  width: 60px; height: 60px;
+  background: var(--hijau-tua);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Playfair Display', serif;
+  font-size: 24px;
+  font-weight: 900;
+  color: var(--emas-muda);
+  margin: 0 auto 16px;
+  border: 3px solid var(--emas);
+}
+.step-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--hijau-tua);
+  margin-bottom: 8px;
+}
+.step-desc { font-size: 15px; color: var(--abu); line-height: 1.6; }
+
+.syarat-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-top: 48px;
+}
+.syarat-card {
+  background: var(--putih);
+  border-radius: 16px;
+  padding: 28px;
+  border: 1px solid var(--krem-gelap);
+}
+.syarat-card h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 22px;
+  color: var(--hijau-tua);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.syarat-item {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+  font-size: 16px;
+  color: var(--abu);
+}
+.syarat-check { color: var(--hijau-muda); font-size: 16px; flex-shrink: 0; margin-top: 2px; }
+
+/* ===== TABEL UJRAH ===== */
+.ujrah-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 24px;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+}
+.ujrah-table th {
+  background: var(--hijau-tua);
+  color: var(--emas-muda);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  padding: 14px 20px;
+  text-align: left;
+}
+.ujrah-table td {
+  padding: 14px 20px;
+  font-size: 16px;
+  border-bottom: 1px solid var(--abu-muda);
+  color: var(--hitam);
+}
+.ujrah-table tr:nth-child(even) td { background: var(--krem); }
+.ujrah-table tr:last-child td { border-bottom: none; }
+.ujrah-chip {
+  display: inline-block;
+  background: var(--hijau-tua);
+  color: var(--emas-muda);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* ===== SIMULASI ===== */
+.simulasi-wrap {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  margin-top: 48px;
+}
+.sim-form {
+  background: var(--putih);
+  border-radius: 20px;
+  padding: 32px;
+  border: 1px solid var(--krem-gelap);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+}
+.sim-form h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 24px;
+  color: var(--hijau-tua);
+  margin-bottom: 24px;
+}
+.form-group { margin-bottom: 20px; }
+.form-label {
+  display: block;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--abu);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: 8px;
+}
+.form-input {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid var(--krem-gelap);
+  border-radius: 10px;
+  font-family: 'Crimson Pro', serif;
+  font-size: 17px;
+  background: var(--krem);
+  color: var(--hitam);
+  outline: none;
+  transition: border-color 0.2s;
+}
+.form-input:focus { border-color: var(--hijau-muda); background: var(--putih); }
+select.form-input { appearance: none; cursor: pointer; }
+.calc-btn {
+  width: 100%;
+  padding: 14px;
+  background: var(--hijau-tua);
+  color: var(--emas-muda);
+  border: none;
+  border-radius: 10px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  transition: all 0.2s;
+  margin-top: 8px;
+}
+.calc-btn:hover { background: var(--hijau); transform: translateY(-1px); }
+
+.sim-result {
+  background: var(--hijau-tua);
+  border-radius: 20px;
+  padding: 32px;
+  color: var(--putih);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.sim-result h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 22px;
+  color: var(--emas-muda);
+  margin-bottom: 24px;
+}
+.result-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+.result-item:last-child { border-bottom: none; }
+.result-label { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 0.5px; }
+.result-val { font-family: 'Playfair Display', serif; font-size: 22px; color: var(--emas-muda); font-weight: 700; }
+.result-val.big { font-size: 32px; }
+
+/* ===== ADMIN ===== */
+.admin-login {
+  max-width: 420px;
+  margin: 40px auto;
+  background: var(--putih);
+  border-radius: 20px;
+  padding: 40px;
+  border: 1px solid var(--krem-gelap);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+  text-align: center;
+}
+.admin-login h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 28px;
+  color: var(--hijau-tua);
+  margin-bottom: 8px;
+}
+.admin-login p { font-size: 15px; color: var(--abu); margin-bottom: 28px; }
+
+.admin-dash { display: none; }
+.admin-dash.active { display: block; }
+
+.dash-header {
+  background: var(--hijau-tua);
+  padding: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.dash-header h2 { font-family: 'Playfair Display', serif; font-size: 24px; color: var(--emas-muda); }
+.logout-btn {
+  padding: 8px 16px;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: rgba(255,255,255,0.7);
+  border-radius: 6px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  cursor: pointer;
+  text-transform: uppercase;
+}
+
+.dash-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  padding: 24px;
+  background: var(--hijau);
+}
+.dash-stat {
+  background: rgba(255,255,255,0.1);
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+}
+.dash-stat-val { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 900; color: var(--emas-muda); }
+.dash-stat-label { font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 0.8px; margin-top: 4px; }
+
+.dash-content { padding: 24px; }
+.dash-tabs { display: flex; gap: 8px; margin-bottom: 24px; }
+.dash-tab {
+  padding: 10px 20px;
+  border: 2px solid var(--krem-gelap);
+  border-radius: 8px;
+  background: var(--putih);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  cursor: pointer;
+  color: var(--abu);
+  transition: all 0.2s;
+  text-transform: uppercase;
+}
+.dash-tab.active { background: var(--hijau-tua); color: var(--emas-muda); border-color: var(--hijau-tua); }
+
+.dash-panel { display: none; }
+.dash-panel.active { display: block; }
+
+.dash-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+.data-table { width: 100%; border-collapse: collapse; }
+.data-table th {
+  background: var(--hijau-tua);
+  color: var(--emas-muda);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 12px 16px;
+  text-align: left;
+}
+.data-table td {
+  padding: 12px 16px;
+  font-size: 15px;
+  border-bottom: 1px solid var(--abu-muda);
+}
+.data-table tr:hover td { background: var(--krem); }
+.status-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  font-weight: 600;
+}
+.status-aktif { background: #d4edda; color: #155724; }
+.status-lunas { background: #fff3cd; color: #856404; }
+.status-macet { background: #f8d7da; color: #721c24; }
+
+/* ===== KONTAK ===== */
+.kontak-hero {
+  background: var(--hijau-tua);
+  padding: 80px 24px;
+  text-align: center;
+}
+.kontak-hero h1 { font-family: 'Playfair Display', serif; font-size: 48px; color: var(--emas-muda); margin-bottom: 16px; }
+.kontak-hero p { font-size: 18px; color: rgba(255,255,255,0.6); }
+
+.kontak-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  margin-top: 48px;
+}
+.kontak-info h3 { font-family: 'Playfair Display', serif; font-size: 28px; color: var(--hijau-tua); margin-bottom: 24px; }
+.kontak-item {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+  align-items: flex-start;
+}
+.kontak-icon {
+  width: 48px; height: 48px;
+  background: var(--hijau-tua);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  flex-shrink: 0;
+}
+.kontak-detail h4 { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--abu); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 4px; }
+.kontak-detail p { font-size: 17px; color: var(--hitam); }
+
+.kontak-form {
+  background: var(--putih);
+  border-radius: 20px;
+  padding: 32px;
+  border: 1px solid var(--krem-gelap);
+}
+.kontak-form h3 { font-family: 'Playfair Display', serif; font-size: 24px; color: var(--hijau-tua); margin-bottom: 24px; }
+
+/* ===== FOOTER ===== */
+footer {
+  background: var(--hijau-tua);
+  padding: 48px 24px 24px;
+  text-align: center;
+  border-top: 1px solid rgba(201,162,39,0.2);
+}
+.footer-logo {
+  font-family: 'Playfair Display', serif;
+  font-size: 32px;
+  font-weight: 900;
+  color: var(--emas-muda);
+  margin-bottom: 8px;
+}
+.footer-tagline { font-size: 16px; color: rgba(255,255,255,0.4); font-style: italic; margin-bottom: 24px; }
+.footer-copy { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: rgba(255,255,255,0.25); }
+
+/* ===== MISC ===== */
+.divider { height: 1px; background: var(--krem-gelap); margin: 0; }
+.bg-hijau { background: var(--hijau-tua); }
+.bg-krem { background: var(--krem); }
+.text-center { text-align: center; }
+.mb-0 { margin-bottom: 0; }
+
+.toast {
+  position: fixed; bottom: 24px; left: 50%;
+  transform: translateX(-50%) translateY(80px);
+  background: var(--hijau-tua); color: var(--emas-muda);
+  font-family: 'IBM Plex Mono', monospace; font-size: 13px; font-weight: 600;
+  padding: 12px 24px; border-radius: 30px; z-index: 9999;
+  transition: transform 0.3s; box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+}
+.toast.show { transform: translateX(-50%) translateY(0); }
+
+.btn-hijau {
+  padding: 12px 24px; background: var(--hijau-tua); color: var(--emas-muda);
+  border: none; border-radius: 8px; font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s;
+  text-transform: uppercase; letter-spacing: 0.5px;
+}
+.btn-hijau:hover { background: var(--hijau); transform: translateY(-1px); }
+.btn-merah { background: var(--merah); color: white; }
+.btn-sm { padding: 6px 14px; font-size: 11px; }
+
+@media (max-width: 768px) {
+  .hero-content, .about-grid, .simulasi-wrap, .kontak-grid, .syarat-grid { grid-template-columns: 1fr; }
+  .features-grid, .steps-wrap { grid-template-columns: 1fr 1fr; }
+  .dash-stats { grid-template-columns: 1fr 1fr; }
+  .dash-form-grid { grid-template-columns: 1fr; }
+  .nav-links { display: none; }
+  .step-card::after { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <div class="nav-logo" onclick="showPage('beranda')">
+      TAMARA
+      <span>Bahula Tani Nusantara</span>
+    </div>
+    <div style="display:flex;align-items:center">
+      <div class="nav-links">
+        <button class="nav-link active" onclick="showPage('beranda')" data-page="beranda" data-i18n="nav_beranda">Beranda</button>
+        <button class="nav-link" onclick="showPage('tentang')" data-page="tentang" data-i18n="nav_tentang">Tentang</button>
+        <button class="nav-link" onclick="showPage('anggota')" data-page="anggota">Daftar Anggota</button>
+        <button class="nav-link" onclick="showPage('nabung')" data-page="nabung">Nabung</button>
+        <button class="nav-link" onclick="showPage('donasi')" data-page="donasi">Donasi</button>
+        <button class="nav-link" onclick="showPage('investasi')" data-page="investasi">Investasi</button>
+        <button class="nav-link" onclick="showPage('daftar')" data-page="daftar" data-i18n="nav_daftar">Cara Daftar</button>
+        <button class="nav-link" onclick="showPage('simulasi')" data-page="simulasi" data-i18n="nav_simulasi">Simulasi</button>
+        <button class="nav-link" onclick="showPage('kontak')" data-page="kontak" data-i18n="nav_kontak">Kontak</button>
+      </div>
+      <div class="nav-lang">
+        <button class="lang-btn active" onclick="setLang('id')">ID</button>
+        <button class="lang-btn" onclick="setLang('su')">SU</button>
+        <button class="lang-btn" onclick="setLang('en')">EN</button>
+      </div>
+      <button class="nav-admin-btn" onclick="showPage('admin')" data-i18n="nav_admin">Admin</button>
+    </div>
+  </div>
+</nav>
+
+<!-- ========================= BERANDA ========================= -->
+<div id="page-beranda" class="page active">
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-orb hero-orb-1"></div>
+    <div class="hero-orb hero-orb-2"></div>
+    <div class="hero-content">
+      <div>
+        <div class="hero-badge">
+          <div class="hero-badge-dot"></div>
+          <span class="hero-badge-text" data-i18n="hero_badge">Syariah · Amanah · Halal</span>
+        </div>
+        <h1 class="hero-title">TAMARA</h1>
+        <div class="hero-subtitle" data-i18n="hero_subtitle">Tabungan & Pinjaman Rakyat</div>
+        <p class="hero-desc" data-i18n="hero_desc">Solusi keuangan syariah untuk masyarakat kampung. Bebas dari rentenir, halal, transparan, dan milik kita bersama.</p>
+        <div class="hero-cta">
+          <button class="btn-primary" onclick="showPage('anggota');setTimeout(()=>document.getElementById('reg-nama2').focus(),400)" data-i18n="hero_cta1">Daftar Sekarang</button>
+          <button class="btn-outline" onclick="showPage('investasi')" style="border-color:var(--emas);color:var(--emas-muda)">💰 Investasi</button>
+          <button class="btn-outline" onclick="showPage('simulasi')" data-i18n="hero_cta2">Coba Simulasi</button>
+        </div>
+      </div>
+      <div class="hero-stats">
+        <div class="stat-card">
+          <div class="stat-icon">🌾</div>
+          <div class="stat-value">0%</div>
+          <div class="stat-label" data-i18n="stat_riba">Bebas Riba</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">🤝</div>
+          <div class="stat-value">4%</div>
+          <div class="stat-label" data-i18n="stat_ujrah">Ujrah Maks</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">💚</div>
+          <div class="stat-value">2Jt</div>
+          <div class="stat-label" data-i18n="stat_plafon">Plafon Awal</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">🕌</div>
+          <div class="stat-value">3</div>
+          <div class="stat-label" data-i18n="stat_akad">Akad Syariah</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FITUR -->
+  <div class="section">
+    <div class="section-tag" data-i18n="fitur_tag">Mengapa TAMARA</div>
+    <h2 class="section-title" data-i18n="fitur_title">Beda dari Rentenir,<br>Beda dari Bank Biasa</h2>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">🕌</div>
+        <h3 class="feature-title" data-i18n="f1_title">100% Halal</h3>
+        <p class="feature-desc" data-i18n="f1_desc">Akad Ujrah, Mudharabah, dan Wadiah. Tidak ada bunga, tidak ada riba. Semua sesuai syariah Islam.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">👥</div>
+        <h3 class="feature-title" data-i18n="f2_title">Milik Bersama</h3>
+        <p class="feature-desc" data-i18n="f2_desc">Dana dikelola secara transparan oleh pengurus BTN. Laporan terbuka untuk semua anggota.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">⚡</div>
+        <h3 class="feature-title" data-i18n="f3_title">Proses Mudah</h3>
+        <p class="feature-desc" data-i18n="f3_desc">Daftar, nabung Rp 200rb, tunggu 1 minggu. Dana cair penuh tanpa potongan di muka.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📱</div>
+        <h3 class="feature-title" data-i18n="f4_title">Setor Mandiri</h3>
+        <p class="feature-desc" data-i18n="f4_desc">Bayar cicilan via transfer bank, QRIS, atau tunai. Tidak ada petugas datang menagih.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🌱</div>
+        <h3 class="feature-title" data-i18n="f5_title">Bagi Hasil Usaha</h3>
+        <p class="feature-desc" data-i18n="f5_desc">Punya usaha? Ajukan pinjaman Mudharabah. Pilih sendiri nisbah bagi hasil yang sanggup kamu berikan.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🛡️</div>
+        <h3 class="feature-title" data-i18n="f6_title">Tabungan Aman</h3>
+        <p class="feature-desc" data-i18n="f6_desc">Tabungan Wadiah milik anggota sepenuhnya. Bisa ditambah dan ditarik kapan saja.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- VS RENTENIR -->
+  <div style="background: var(--hijau-tua); padding: 80px 24px;">
+    <div style="max-width:1200px; margin:0 auto; text-align:center">
+      <div class="section-tag" style="color:var(--emas-muda)" data-i18n="vs_tag">Perbandingan</div>
+      <h2 style="font-family:'Playfair Display',serif; font-size:40px; color:var(--emas-muda); margin-bottom:40px" data-i18n="vs_title">TAMARA vs Rentenir</h2>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:24px; max-width:800px; margin:0 auto">
+        <div style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:16px; padding:28px">
+          <h3 style="font-family:'Playfair Display',serif; color:var(--emas-muda); font-size:24px; margin-bottom:20px">TAMARA 🌾</h3>
+          <div style="text-align:left">
+            <div style="display:flex;gap:10px;margin-bottom:12px;font-size:16px;color:rgba(255,255,255,0.8)"><span style="color:var(--emas)">✓</span> <span data-i18n="vs_t1">Akad halal — tidak ada riba</span></div>
+            <div style="display:flex;gap:10px;margin-bottom:12px;font-size:16px;color:rgba(255,255,255,0.8)"><span style="color:var(--emas)">✓</span> <span data-i18n="vs_t2">Ujrah flat, tidak memberatkan</span></div>
+            <div style="display:flex;gap:10px;margin-bottom:12px;font-size:16px;color:rgba(255,255,255,0.8)"><span style="color:var(--emas)">✓</span> <span data-i18n="vs_t3">Dana cair penuh</span></div>
+            <div style="display:flex;gap:10px;margin-bottom:12px;font-size:16px;color:rgba(255,255,255,0.8)"><span style="color:var(--emas)">✓</span> <span data-i18n="vs_t4">Pendekatan kekeluargaan</span></div>
+            <div style="display:flex;gap:10px;font-size:16px;color:rgba(255,255,255,0.8)"><span style="color:var(--emas)">✓</span> <span data-i18n="vs_t5">Tabungan tetap milik anggota</span></div>
+          </div>
+        </div>
+        <div style="background:rgba(192,57,43,0.1); border:1px solid rgba(192,57,43,0.2); border-radius:16px; padding:28px">
+          <h3 style="font-family:'Playfair Display',serif; color:#e57373; font-size:24px; margin-bottom:20px" data-i18n="vs_rentenir">Rentenir ⚠️</h3>
+          <div style="text-align:left">
+            <div style="display:flex;gap:10px;margin-bottom:12px;font-size:16px;color:rgba(255,255,255,0.5)"><span style="color:#e57373">✗</span> <span data-i18n="vs_r1">Bunga harian hingga 20-30%</span></div>
+            <div style="display:flex;gap:10px;margin-bottom:12px;font-size:16px;color:rgba(255,255,255,0.5)"><span style="color:#e57373">✗</span> <span data-i18n="vs_r2">Bunga berbunga — riba berlipat</span></div>
+            <div style="display:flex;gap:10px;margin-bottom:12px;font-size:16px;color:rgba(255,255,255,0.5)"><span style="color:#e57373">✗</span> <span data-i18n="vs_r3">Potongan di muka</span></div>
+            <div style="display:flex;gap:10px;margin-bottom:12px;font-size:16px;color:rgba(255,255,255,0.5)"><span style="color:#e57373">✗</span> <span data-i18n="vs_r4">Tekanan dan ancaman</span></div>
+            <div style="display:flex;gap:10px;font-size:16px;color:rgba(255,255,255,0.5)"><span style="color:#e57373">✗</span> <span data-i18n="vs_r5">Tidak ada akad resmi</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-logo">TAMARA</div>
+    <div class="footer-tagline" data-i18n="footer_tagline">Bebas Rentenir. Halal. Amanah. Milik Kita Bersama.</div>
+    <div class="footer-copy">© 2026 Bahula Tani Nusantara · Gunungguruh, Sukabumi</div>
+  </footer>
+</div>
+
+<!-- ========================= TENTANG ========================= -->
+<div id="page-tentang" class="page">
+  <div class="tentang-hero">
+    <h1 data-i18n="tentang_h1">Tentang TAMARA</h1>
+    <p data-i18n="tentang_sub">Gerakan pembebasan ekonomi rakyat berbasis syariah</p>
+  </div>
+  <div class="section">
+    <div class="about-grid">
+      <div class="about-text">
+        <h2 data-i18n="tentang_visi_h">Visi Kami</h2>
+        <p data-i18n="tentang_p1">TAMARA lahir dari satu keprihatinan: rentenir telah lama mencengkeram ekonomi masyarakat kampung dengan bunga harian yang mencekik. Warga yang membutuhkan modal terpaksa menyerah pada kondisi yang tidak adil.</p>
+        <p data-i18n="tentang_p2">Melalui TAMARA, Bahula Tani Nusantara membangun sistem keuangan komunitas yang adil, halal, dan sepenuhnya dikelola oleh dan untuk masyarakat Gunungguruh dan sekitarnya.</p>
+        <p data-i18n="tentang_p3">Bukan sekadar simpan pinjam — ini adalah gerakan menuju kemandirian ekonomi berbasis nilai-nilai Islam yang kita pegang bersama.</p>
+      </div>
+      <div>
+        <div class="akad-grid">
+          <div class="akad-card">
+            <div class="akad-name">Ujrah</div>
+            <div class="akad-desc" data-i18n="akad_ujrah">Biaya administrasi flat. Bukan bunga. Tidak memberatkan.</div>
+          </div>
+          <div class="akad-card emas">
+            <div class="akad-name" style="color:var(--emas)">Mudharabah</div>
+            <div class="akad-desc" data-i18n="akad_mudh">Bagi hasil usaha. BTN ikut menanggung risiko bersama.</div>
+          </div>
+          <div class="akad-card">
+            <div class="akad-name">Wadiah</div>
+            <div class="akad-desc" data-i18n="akad_wad">Titipan murni. Tabungan tetap milik anggota sepenuhnya.</div>
+          </div>
+          <div class="akad-card emas">
+            <div class="akad-name" style="color:var(--emas)">Amanah</div>
+            <div class="akad-desc" data-i18n="akad_aman">Laporan terbuka. Dikelola bersama. Transparan penuh.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:64px">
+      <div class="section-tag" data-i18n="struktur_tag">Struktur Organisasi</div>
+      <h2 class="section-title" data-i18n="struktur_h">Di Bawah Naungan BTN</h2>
+      <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-top:32px">
+        <div style="background:var(--hijau-tua); border-radius:16px; padding:24px; text-align:center; color:white">
+          <div style="font-size:32px; margin-bottom:12px">🏛️</div>
+          <div style="font-family:'Playfair Display',serif; font-size:16px; color:var(--emas-muda); font-weight:700; margin-bottom:6px" data-i18n="org1">Yayasan BTN</div>
+          <div style="font-family:'IBM Plex Mono',monospace; font-size:11px; color:rgba(255,255,255,0.4)" data-i18n="org1s">Pembina & Pengawas</div>
+        </div>
+        <div style="background:var(--putih); border:2px solid var(--emas); border-radius:16px; padding:24px; text-align:center">
+          <div style="font-size:32px; margin-bottom:12px">👑</div>
+          <div style="font-family:'Playfair Display',serif; font-size:16px; color:var(--hijau-tua); font-weight:700; margin-bottom:6px" data-i18n="org2">Ketua TAMARA</div>
+          <div style="font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--abu)" data-i18n="org2s">Keputusan Strategis</div>
+        </div>
+        <div style="background:var(--putih); border:1px solid var(--krem-gelap); border-radius:16px; padding:24px; text-align:center">
+          <div style="font-size:32px; margin-bottom:12px">📊</div>
+          <div style="font-family:'Playfair Display',serif; font-size:16px; color:var(--hijau-tua); font-weight:700; margin-bottom:6px" data-i18n="org3">Admin Keuangan</div>
+          <div style="font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--abu)" data-i18n="org3s">Kelola Kas & Data</div>
+        </div>
+        <div style="background:var(--putih); border:1px solid var(--krem-gelap); border-radius:16px; padding:24px; text-align:center">
+          <div style="font-size:32px; margin-bottom:12px">🤝</div>
+          <div style="font-family:'Playfair Display',serif; font-size:16px; color:var(--hijau-tua); font-weight:700; margin-bottom:6px" data-i18n="org4">Pendamping</div>
+          <div style="font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--abu)" data-i18n="org4s">Rekrut & Dampingi</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <footer>
+    <div class="footer-logo">TAMARA</div>
+    <div class="footer-tagline" data-i18n="footer_tagline">Bebas Rentenir. Halal. Amanah. Milik Kita Bersama.</div>
+    <div class="footer-copy">© 2026 Bahula Tani Nusantara · Gunungguruh, Sukabumi</div>
+  </footer>
+</div>
+
+<!-- ========================= CARA DAFTAR ========================= -->
+<div id="page-daftar" class="page">
+  <div class="tentang-hero">
+    <h1 data-i18n="daftar_h1">Cara Daftar & Syarat</h1>
+    <p data-i18n="daftar_sub">Mudah, cepat, dan transparan</p>
+  </div>
+  <div class="section">
+    <div class="section-tag" data-i18n="langkah_tag">Langkah-langkah</div>
+    <h2 class="section-title" data-i18n="langkah_h">Mulai dalam 4 Langkah</h2>
+    <div class="steps-wrap">
+      <div class="step-card">
+        <div class="step-num">1</div>
+        <div class="step-title" data-i18n="step1_t">Daftar</div>
+        <div class="step-desc" data-i18n="step1_d">Isi formulir pendaftaran & serahkan fotokopi KTP. Bayar iuran Rp 25.000.</div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">2</div>
+        <div class="step-title" data-i18n="step2_t">Setor Wadiah</div>
+        <div class="step-desc" data-i18n="step2_d">Setor tabungan Wadiah Rp 200.000. Uang ini tetap milikmu, bisa diambil kapan saja.</div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">3</div>
+        <div class="step-title" data-i18n="step3_t">Tunggu ACC</div>
+        <div class="step-desc" data-i18n="step3_d">Proses verifikasi 1 minggu. Admin akan menghubungi via WhatsApp.</div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">4</div>
+        <div class="step-title" data-i18n="step4_t">Dana Cair</div>
+        <div class="step-desc" data-i18n="step4_d">Dana ditransfer penuh ke rekeningmu. Cicilan dimulai minggu berikutnya.</div>
+      </div>
+    </div>
+
+    <div style="margin-top:64px">
+      <div class="section-tag" data-i18n="syarat_tag">Persyaratan</div>
+      <h2 class="section-title" data-i18n="syarat_h">Syarat Keanggotaan</h2>
+      <div class="syarat-grid">
+        <div class="syarat-card">
+          <h3>🪪 <span data-i18n="syarat_umum">Syarat Umum</span></h3>
+          <div class="syarat-item"><span class="syarat-check">✓</span><span data-i18n="s1">Warga wilayah operasional TAMARA</span></div>
+          <div class="syarat-item"><span class="syarat-check">✓</span><span data-i18n="s2">KTP yang masih berlaku</span></div>
+          <div class="syarat-item"><span class="syarat-check">✓</span><span data-i18n="s3">Iuran pendaftaran Rp 25.000</span></div>
+          <div class="syarat-item"><span class="syarat-check">✓</span><span data-i18n="s4">Bersedia mengikuti SOP TAMARA</span></div>
+        </div>
+        <div class="syarat-card">
+          <h3>💰 <span data-i18n="syarat_pinjam">Syarat Pinjaman</span></h3>
+          <div class="syarat-item"><span class="syarat-check">✓</span><span data-i18n="s5">Sudah terdaftar sebagai anggota</span></div>
+          <div class="syarat-item"><span class="syarat-check">✓</span><span data-i18n="s6">Setor Wadiah Rp 200.000</span></div>
+          <div class="syarat-item"><span class="syarat-check">✓</span><span data-i18n="s7">Tidak ada tunggakan macet</span></div>
+          <div class="syarat-item"><span class="syarat-check">✓</span><span data-i18n="s8">Mengisi formulir pengajuan pinjaman</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:64px">
+      <div class="section-tag" data-i18n="ujrah_tag">Biaya Admin</div>
+      <h2 class="section-title" data-i18n="ujrah_h">Tabel Ujrah TAMARA</h2>
+      <p style="font-size:17px; color:var(--abu); margin-bottom:8px" data-i18n="ujrah_note">Ujrah bukan bunga. Ini biaya administrasi flat yang dibayar sekali di cicilan pertama.</p>
+      <table class="ujrah-table">
+        <tr>
+          <th data-i18n="ujrah_th1">Besar Pinjaman</th>
+          <th data-i18n="ujrah_th2">Ujrah</th>
+          <th data-i18n="ujrah_th3">Pendamping</th>
+          <th data-i18n="ujrah_th4">Kas BTN</th>
+          <th data-i18n="ujrah_th5">Cadangan</th>
+        </tr>
+        <tr>
+          <td>Rp 100.000 — Rp 500.000</td>
+          <td><span class="ujrah-chip">Rp 25.000</span></td>
+          <td>Rp 12.500</td>
+          <td>Rp 8.000</td>
+          <td>Rp 4.500</td>
+        </tr>
+        <tr>
+          <td>Rp 500.001 — Rp 1.000.000</td>
+          <td><span class="ujrah-chip">Rp 50.000</span></td>
+          <td>Rp 25.000</td>
+          <td>Rp 15.000</td>
+          <td>Rp 10.000</td>
+        </tr>
+        <tr>
+          <td>Rp 1.000.001 — Rp 2.000.000</td>
+          <td><span class="ujrah-chip">Rp 80.000</span></td>
+          <td>Rp 40.000</td>
+          <td>Rp 25.000</td>
+          <td>Rp 15.000</td>
+        </tr>
+      </table>
+    </div>
+
+    <div style="margin-top:64px; background:var(--hijau-tua); border-radius:20px; padding:40px; text-align:center">
+      <h2 style="font-family:'Playfair Display',serif; font-size:32px; color:var(--emas-muda); margin-bottom:12px" data-i18n="cta_h">Siap Bergabung?</h2>
+      <p style="font-size:17px; color:rgba(255,255,255,0.6); margin-bottom:24px" data-i18n="cta_p">Hubungi Pendamping TAMARA di wilayahmu atau kunjungi kantor BTN.</p>
+      <button class="btn-primary" onclick="showPage('kontak');setTimeout(()=>document.getElementById('reg-nama').focus(),400)" data-i18n="cta_btn">Hubungi Kami</button>
+    </div>
+  </div>
+  <footer>
+    <div class="footer-logo">TAMARA</div>
+    <div class="footer-tagline" data-i18n="footer_tagline">Bebas Rentenir. Halal. Amanah. Milik Kita Bersama.</div>
+    <div class="footer-copy">© 2026 Bahula Tani Nusantara · Gunungguruh, Sukabumi</div>
+  </footer>
+</div>
+
+<!-- ========================= SIMULASI ========================= -->
+<div id="page-simulasi" class="page">
+  <div class="tentang-hero">
+    <h1 data-i18n="sim_h1">Simulasi Pinjaman</h1>
+    <p data-i18n="sim_sub">Hitung estimasi cicilan sebelum mengajukan</p>
+  </div>
+  <div class="section">
+    <div class="simulasi-wrap">
+      <div class="sim-form">
+        <h3 data-i18n="sim_form_h">Detail Pinjaman</h3>
+        <div class="form-group">
+          <label class="form-label" data-i18n="sim_jenis">Jenis Pinjaman</label>
+          <select class="form-input" id="sim-jenis" onchange="updateSim()">
+            <option value="ujrah" data-i18n="sim_opt1">Pinjaman Reguler (Ujrah)</option>
+            <option value="mudh" data-i18n="sim_opt2">Pinjaman Usaha (Mudharabah)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" data-i18n="sim_jumlah">Jumlah Pinjaman (Rp)</label>
+          <input type="number" class="form-input" id="sim-jumlah" value="1000000" min="100000" max="2000000" step="50000" oninput="updateSim()">
+        </div>
+        <div class="form-group">
+          <label class="form-label" data-i18n="sim_tenor">Tenor (Minggu)</label>
+          <input type="number" class="form-input" id="sim-tenor" value="10" min="1" max="52" oninput="updateSim()">
+        </div>
+        <div id="mudh-section" style="display:none">
+          <div class="form-group">
+            <label class="form-label" data-i18n="sim_nisbah">Nisbah Bagi Hasil untuk BTN</label>
+            <select class="form-input" id="sim-nisbah" onchange="updateSim()">
+              <option value="10">10% — Paket Ringan</option>
+              <option value="20">20% — Paket Standar</option>
+              <option value="30" selected>30% — Paket Sedang</option>
+              <option value="40">40% — Paket Penuh</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" data-i18n="sim_profit">Estimasi Profit Usaha/Bulan (Rp)</label>
+            <input type="number" class="form-input" id="sim-profit" value="1000000" oninput="updateSim()">
+          </div>
+        </div>
+        <button class="calc-btn" onclick="updateSim()" data-i18n="sim_hitung">Hitung Simulasi</button>
+      </div>
+
+      <div class="sim-result">
+        <h3 data-i18n="sim_result_h">Hasil Simulasi</h3>
+        <div class="result-item">
+          <span class="result-label" data-i18n="res_pokok">Pokok Pinjaman</span>
+          <span class="result-val" id="res-pokok">Rp 1.000.000</span>
+        </div>
+        <div class="result-item">
+          <span class="result-label" data-i18n="res_ujrah">Ujrah (Admin)</span>
+          <span class="result-val" id="res-ujrah">Rp 50.000</span>
+        </div>
+        <div class="result-item">
+          <span class="result-label" data-i18n="res_total">Total Kembalikan</span>
+          <span class="result-val big" id="res-total">Rp 1.050.000</span>
+        </div>
+        <div class="result-item">
+          <span class="result-label" data-i18n="res_cicilan">Cicilan Per Minggu</span>
+          <span class="result-val big" id="res-cicilan">Rp 105.000</span>
+        </div>
+        <div class="result-item" id="res-bagi-wrap" style="display:none">
+          <span class="result-label" data-i18n="res_bagi">Bagi Hasil/Bulan untuk BTN</span>
+          <span class="result-val" id="res-bagi">Rp 300.000</span>
+        </div>
+        <div class="result-item">
+          <span class="result-label" data-i18n="res_tenor">Tenor</span>
+          <span class="result-val" id="res-tenor">10 Minggu</span>
+        </div>
+        <div style="margin-top:20px; padding:16px; background:rgba(255,255,255,0.07); border-radius:10px">
+          <div style="font-family:'IBM Plex Mono',monospace; font-size:11px; color:rgba(255,255,255,0.4); text-transform:uppercase; letter-spacing:0.8px; margin-bottom:6px" data-i18n="res_note_label">Catatan Syariah</div>
+          <div style="font-size:15px; color:rgba(255,255,255,0.6); line-height:1.6" id="res-note" data-i18n="res_note_ujrah">Ujrah dibayar di cicilan pertama. Dana cair penuh tanpa potongan di muka.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <footer>
+    <div class="footer-logo">TAMARA</div>
+    <div class="footer-tagline" data-i18n="footer_tagline">Bebas Rentenir. Halal. Amanah. Milik Kita Bersama.</div>
+    <div class="footer-copy">© 2026 Bahula Tani Nusantara · Gunungguruh, Sukabumi</div>
+  </footer>
+</div>
+
+<!-- ========================= ADMIN ========================= -->
+<div id="page-admin" class="page">
+  <div class="section" style="padding-top:40px">
+    <!-- LOGIN -->
+    <div class="admin-login" id="admin-login">
+      <div style="font-size:48px; margin-bottom:16px">🔐</div>
+      <h2 data-i18n="login_h">Admin TAMARA</h2>
+      <p data-i18n="login_sub">Masuk untuk kelola data anggota dan pinjaman</p>
+      <div class="form-group">
+        <label class="form-label" data-i18n="login_user">Username</label>
+        <input type="text" class="form-input" id="login-user" placeholder="admin">
+      </div>
+      <div class="form-group">
+        <label class="form-label" data-i18n="login_pass">Password</label>
+        <input type="password" class="form-input" id="login-pass" placeholder="••••••">
+      </div>
+      <button class="calc-btn" onclick="doLogin()" data-i18n="login_btn">Masuk</button>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div class="admin-dash" id="admin-dash">
+      <div class="dash-header">
+        <h2>🌾 Dashboard TAMARA</h2>
+        <button class="logout-btn" onclick="doLogout()">Keluar</button>
+      </div>
+      <div class="dash-stats">
+        <div class="dash-stat">
+          <div class="dash-stat-val" id="ds-anggota">0</div>
+          <div class="dash-stat-label" data-i18n="ds_anggota">Total Anggota</div>
+        </div>
+        <div class="dash-stat">
+          <div class="dash-stat-val" id="ds-aktif">0</div>
+          <div class="dash-stat-label" data-i18n="ds_aktif">Pinjaman Aktif</div>
+        </div>
+        <div class="dash-stat">
+          <div class="dash-stat-val" id="ds-total">Rp 0</div>
+          <div class="dash-stat-label" data-i18n="ds_total">Total Disalurkan</div>
+        </div>
+        <div class="dash-stat">
+          <div class="dash-stat-val" id="ds-sisa">Rp 0</div>
+          <div class="dash-stat-label" data-i18n="ds_sisa">Sisa Piutang</div>
+        </div>
+      </div>
+      <div class="dash-content">
+        <div class="dash-tabs">
+          <button class="dash-tab active" onclick="showDashTab('anggota')" data-i18n="dt_anggota">Anggota</button>
+          <button class="dash-tab" onclick="showDashTab('pinjaman')" data-i18n="dt_pinjaman">Pinjaman</button>
+          <button class="dash-tab" onclick="showDashTab('tabungan')" data-i18n="dt_tabungan">Tabungan</button>
+        </div>
+
+        <!-- ANGGOTA -->
+        <div class="dash-panel active" id="panel-anggota">
+          <div style="background:var(--putih); border-radius:16px; padding:24px; margin-bottom:24px; border:1px solid var(--krem-gelap)">
+            <h3 style="font-family:'Playfair Display',serif; font-size:20px; color:var(--hijau-tua); margin-bottom:20px" data-i18n="tambah_anggota">+ Tambah Anggota</h3>
+            <div class="dash-form-grid">
+              <div class="form-group">
+                <label class="form-label" data-i18n="f_nama">Nama Lengkap</label>
+                <input type="text" class="form-input" id="a-nama" placeholder="Nama anggota...">
+              </div>
+              <div class="form-group">
+                <label class="form-label" data-i18n="f_alamat">Alamat / RT-RW</label>
+                <input type="text" class="form-input" id="a-alamat" placeholder="RT 02/03...">
+              </div>
+              <div class="form-group">
+                <label class="form-label" data-i18n="f_hp">No. HP / WA</label>
+                <input type="text" class="form-input" id="a-hp" placeholder="08xx...">
+              </div>
+              <div class="form-group">
+                <label class="form-label" data-i18n="f_level">Level</label>
+                <select class="form-input" id="a-level">
+                  <option value="biasa" data-i18n="level_biasa">Anggota Biasa</option>
+                  <option value="aktif" data-i18n="level_aktif">Anggota Aktif</option>
+                  <option value="mitra" data-i18n="level_mitra">Anggota Mitra</option>
+                </select>
+              </div>
+            </div>
+            <button class="btn-hijau" onclick="tambahAnggota()" data-i18n="btn_simpan">Simpan Anggota</button>
+          </div>
+          <div style="background:var(--putih); border-radius:16px; padding:24px; border:1px solid var(--krem-gelap); overflow-x:auto">
+            <h3 style="font-family:'Playfair Display',serif; font-size:20px; color:var(--hijau-tua); margin-bottom:16px" data-i18n="daftar_anggota">Daftar Anggota</h3>
+            <table class="data-table" id="tbl-anggota">
+              <tr>
+                <th data-i18n="th_no">No</th>
+                <th data-i18n="th_nama">Nama</th>
+                <th data-i18n="th_alamat">Alamat</th>
+                <th data-i18n="th_hp">HP</th>
+                <th data-i18n="th_level">Level</th>
+                <th data-i18n="th_aksi">Aksi</th>
+              </tr>
+            </table>
+          </div>
+        </div>
+
+        <!-- PINJAMAN -->
+        <div class="dash-panel" id="panel-pinjaman">
+          <div style="background:var(--putih); border-radius:16px; padding:24px; margin-bottom:24px; border:1px solid var(--krem-gelap)">
+            <h3 style="font-family:'Playfair Display',serif; font-size:20px; color:var(--hijau-tua); margin-bottom:20px" data-i18n="tambah_pinjaman">+ Tambah Pinjaman</h3>
+            <div class="dash-form-grid">
+              <div class="form-group">
+                <label class="form-label" data-i18n="f_peminjam">Nama Peminjam</label>
+                <input type="text" class="form-input" id="p-nama" placeholder="Nama anggota...">
+              </div>
+              <div class="form-group">
+                <label class="form-label" data-i18n="f_jenis">Jenis Pinjaman</label>
+                <select class="form-input" id="p-jenis">
+                  <option value="ujrah" data-i18n="jenis_ujrah">Reguler (Ujrah)</option>
+                  <option value="mudh" data-i18n="jenis_mudh">Usaha (Mudharabah)</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label" data-i18n="f_jumlah">Jumlah (Rp)</label>
+                <input type="number" class="form-input" id="p-jumlah" placeholder="1000000">
+              </div>
+              <div class="form-group">
+                <label class="form-label" data-i18n="f_tenor">Tenor (Minggu)</label>
+                <input type="number" class="form-input" id="p-tenor" placeholder="10">
+              </div>
+            </div>
+            <button class="btn-hijau" onclick="tambahPinjaman()" data-i18n="btn_catat">Catat Pinjaman</button>
+          </div>
+          <div style="background:var(--putih); border-radius:16px; padding:24px; border:1px solid var(--krem-gelap); overflow-x:auto">
+            <h3 style="font-family:'Playfair Display',serif; font-size:20px; color:var(--hijau-tua); margin-bottom:16px" data-i18n="daftar_pinjaman">Daftar Pinjaman</h3>
+            <table class="data-table" id="tbl-pinjaman">
+              <tr>
+                <th data-i18n="th_no">No</th>
+                <th data-i18n="th_nama">Nama</th>
+                <th data-i18n="th_jenis">Jenis</th>
+                <th data-i18n="th_jumlah">Jumlah</th>
+                <th data-i18n="th_ujrah">Ujrah</th>
+                <th data-i18n="th_tenor">Tenor</th>
+                <th data-i18n="th_status">Status</th>
+                <th data-i18n="th_aksi">Aksi</th>
+              </tr>
+            </table>
+          </div>
+        </div>
+
+        <!-- TABUNGAN -->
+        <div class="dash-panel" id="panel-tabungan">
+          <div style="background:var(--putih); border-radius:16px; padding:24px; margin-bottom:24px; border:1px solid var(--krem-gelap)">
+            <h3 style="font-family:'Playfair Display',serif; font-size:20px; color:var(--hijau-tua); margin-bottom:20px" data-i18n="catat_tabungan">+ Catat Tabungan</h3>
+            <div class="dash-form-grid">
+              <div class="form-group">
+                <label class="form-label" data-i18n="f_penabung">Nama Penabung</label>
+                <input type="text" class="form-input" id="t-nama" placeholder="Nama anggota...">
+              </div>
+              <div class="form-group">
+                <label class="form-label" data-i18n="f_saldo">Jumlah Setor (Rp)</label>
+                <input type="number" class="form-input" id="t-jumlah" placeholder="200000">
+              </div>
+              <div class="form-group">
+                <label class="form-label" data-i18n="f_jenis_tb">Jenis</label>
+                <select class="form-input" id="t-jenis">
+                  <option value="wadiah-wajib" data-i18n="tb_wajib">Wadiah Wajib</option>
+                  <option value="sukarela" data-i18n="tb_sukarela">Sukarela</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label" data-i18n="f_ket">Keterangan</label>
+                <input type="text" class="form-input" id="t-ket" placeholder="Setor awal / tambahan...">
+              </div>
+            </div>
+            <button class="btn-hijau" onclick="tambahTabungan()" data-i18n="btn_catat_tb">Catat Tabungan</button>
+          </div>
+          <div style="background:var(--putih); border-radius:16px; padding:24px; border:1px solid var(--krem-gelap); overflow-x:auto">
+            <h3 style="font-family:'Playfair Display',serif; font-size:20px; color:var(--hijau-tua); margin-bottom:16px" data-i18n="riwayat_tb">Riwayat Tabungan</h3>
+            <table class="data-table" id="tbl-tabungan">
+              <tr>
+                <th data-i18n="th_tgl">Tanggal</th>
+                <th data-i18n="th_nama">Nama</th>
+                <th data-i18n="th_jenis">Jenis</th>
+                <th data-i18n="th_jumlah">Jumlah</th>
+                <th data-i18n="th_ket">Keterangan</th>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========================= KONTAK ========================= -->
+<div id="page-kontak" class="page">
+  <div class="kontak-hero">
+    <h1 data-i18n="kontak_h1">Kontak & Lokasi</h1>
+    <p data-i18n="kontak_sub">Hubungi kami atau kunjungi kantor BTN</p>
+  </div>
+  <div class="section">
+    <div class="kontak-grid">
+      <div class="kontak-info">
+        <h3 data-i18n="kontak_info_h">Informasi Kontak</h3>
+        <div class="kontak-item">
+          <div class="kontak-icon">📍</div>
+          <div class="kontak-detail">
+            <h4 data-i18n="k_lokasi">Lokasi</h4>
+            <p>Gunungguruh, Sukabumi<br>Jawa Barat, Indonesia</p>
+          </div>
+        </div>
+        <div class="kontak-item">
+          <div class="kontak-icon">📱</div>
+          <div class="kontak-detail">
+            <h4 data-i18n="k_wa">WhatsApp Admin</h4>
+            <p><a href="https://wa.me/6283971666136" target="_blank" style="color:var(--hijau-muda);font-weight:700;text-decoration:none">083971666136</a><br>
+            <span style="font-size:14px;color:var(--abu)">Tap untuk langsung chat</span></p>
+          </div>
+        </div>
+        <div class="kontak-item">
+          <div class="kontak-icon">📧</div>
+          <div class="kontak-detail">
+            <h4>Email</h4>
+            <p><a href="mailto:malviejayagroup@gmail.com" style="color:var(--hijau-muda);font-weight:700;text-decoration:none">malviejayagroup@gmail.com</a></p>
+          </div>
+        </div>
+        <div class="kontak-item">
+          <div class="kontak-icon">🕰️</div>
+          <div class="kontak-detail">
+            <h4 data-i18n="k_jam">Jam Operasional</h4>
+            <p data-i18n="k_jam_val">Senin – Jumat, 08.00 – 16.00 WIB</p>
+          </div>
+        </div>
+        <div class="kontak-item">
+          <div class="kontak-icon">🕌</div>
+          <div class="kontak-detail">
+            <h4 data-i18n="k_org">Organisasi</h4>
+            <p>Bahula Tani Nusantara (BTN)<br>SK No. 141.1/18/XI/2021</p>
+          </div>
+        </div>
+
+        <!-- REKENING -->
+        <div style="background:var(--hijau-tua);border-radius:16px;padding:24px;margin-top:8px">
+          <h4 style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--emas-muda);text-transform:uppercase;letter-spacing:1px;margin-bottom:16px">🏦 Rekening Resmi TAMARA</h4>
+          <div style="background:rgba(255,255,255,0.08);border-radius:10px;padding:16px;margin-bottom:12px">
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:4px">BANK BJB</div>
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:20px;font-weight:700;color:var(--emas-muda);letter-spacing:1px">0160405831100</div>
+            <div style="font-size:14px;color:rgba(255,255,255,0.6);margin-top:4px">a.n. HUDRI</div>
+          </div>
+          <div style="background:rgba(255,255,255,0.08);border-radius:10px;padding:16px">
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:rgba(255,255,255,0.4);margin-bottom:4px">BANK MANDIRI</div>
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:20px;font-weight:700;color:var(--emas-muda);letter-spacing:1px">1820016298168</div>
+            <div style="font-size:14px;color:rgba(255,255,255,0.6);margin-top:4px">a.n. TAMARA / BTN</div>
+          </div>
+          <div style="margin-top:12px;font-size:13px;color:rgba(255,255,255,0.4);font-style:italic">
+            * Setelah transfer, kirim bukti ke WA Admin
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <!-- FORM KIRIM PESAN -->
+        <div class="kontak-form" style="margin-bottom:24px">
+          <h3 data-i18n="kontak_form_h">Kirim Pesan</h3>
+          <div class="form-group">
+            <label class="form-label" data-i18n="k_f_nama">Nama Lengkap</label>
+            <input type="text" class="form-input" id="k-nama" placeholder="Nama kamu...">
+          </div>
+          <div class="form-group">
+            <label class="form-label" data-i18n="k_f_hp">No. HP / WA</label>
+            <input type="text" class="form-input" id="k-hp" placeholder="083x-xxxx-xxxx">
+          </div>
+          <div class="form-group">
+            <label class="form-label" data-i18n="k_f_pesan">Pesan</label>
+            <textarea class="form-input" id="k-pesan" rows="4" placeholder="Tulis pesanmu..." style="resize:vertical"></textarea>
+          </div>
+          <button class="calc-btn" onclick="kirimPesan()" data-i18n="k_btn_kirim">Kirim via WhatsApp</button>
+        </div>
+
+        <!-- PENDAFTARAN DIGITAL -->
+        <div class="kontak-form" style="border-top:4px solid var(--emas)">
+          <h3 style="color:var(--emas)">📝 Daftar Online</h3>
+          <p style="font-size:15px;color:var(--abu);margin-bottom:20px">Isi formulir di bawah untuk mendaftar jadi anggota TAMARA. Admin akan menghubungi kamu via WhatsApp.</p>
+          <div class="form-group">
+            <label class="form-label">Nama Lengkap *</label>
+            <input type="text" class="form-input" id="reg-nama" placeholder="Nama lengkap sesuai KTP">
+          </div>
+          <div class="form-group">
+            <label class="form-label">No. HP / WA *</label>
+            <input type="text" class="form-input" id="reg-hp" placeholder="083x-xxxx-xxxx">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Alamat / RT-RW *</label>
+            <input type="text" class="form-input" id="reg-alamat" placeholder="Cth: RT 02/03 Kp. Cibatu">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Pekerjaan</label>
+            <input type="text" class="form-input" id="reg-kerja" placeholder="Petani / pedagang / IRT...">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Tujuan Bergabung *</label>
+            <select class="form-input" id="reg-tujuan">
+              <option value="">Pilih tujuan...</option>
+              <option value="Menabung saja">Menabung saja</option>
+              <option value="Pinjaman kebutuhan keluarga">Pinjaman kebutuhan keluarga</option>
+              <option value="Pinjaman modal usaha (Ujrah)">Pinjaman modal usaha (Ujrah)</option>
+              <option value="Pinjaman usaha bagi hasil (Mudharabah)">Pinjaman usaha bagi hasil (Mudharabah)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Perkiraan Pinjaman</label>
+            <select class="form-input" id="reg-plafon">
+              <option value="Belum tahu">Belum tahu</option>
+              <option value="Rp 100.000 – 500.000">Rp 100.000 – 500.000</option>
+              <option value="Rp 500.001 – 1.000.000">Rp 500.001 – 1.000.000</option>
+              <option value="Rp 1.000.001 – 2.000.000">Rp 1.000.001 – 2.000.000</option>
+            </select>
+          </div>
+          <div style="background:var(--krem);border-radius:10px;padding:14px;margin-bottom:16px;font-size:14px;color:var(--abu)">
+            <b style="color:var(--hijau-tua)">Dengan mendaftar, saya menyatakan:</b><br>
+            ✓ Data yang saya isi adalah benar<br>
+            ✓ Bersedia membayar iuran Rp 25.000 saat pendaftaran<br>
+            ✓ Bersedia mengikuti SOP TAMARA<br>
+            ✓ Menyetujui akad Wadiah atas tabungan yang dititipkan
+          </div>
+          <button class="calc-btn" onclick="daftarOnline()" style="background:var(--emas);color:var(--hijau-tua)">
+            📲 Kirim Pendaftaran via WhatsApp
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <footer>
+    <div class="footer-logo">TAMARA</div>
+    <div class="footer-tagline" data-i18n="footer_tagline">Bebas Rentenir. Halal. Amanah. Milik Kita Bersama.</div>
+    <div class="footer-copy">© 2026 Bahula Tani Nusantara · Gunungguruh, Sukabumi</div>
+  </footer>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- ========================= DAFTAR ANGGOTA ========================= -->
+<div id="page-anggota" class="page">
+  <div class="tentang-hero">
+    <h1>👥 Daftar Anggota</h1>
+    <p>Bergabung dan mulai perjalanan finansial syariah bersama TAMARA</p>
+  </div>
+  <div class="section">
+    <!-- STATS -->
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:48px">
+      <div style="background:var(--hijau-tua);border-radius:16px;padding:24px;text-align:center">
+        <div style="font-family:'Playfair Display',serif;font-size:36px;font-weight:900;color:var(--emas-muda)" id="stat-anggota">0</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:rgba(255,255,255,0.5);text-transform:uppercase;letter-spacing:1px;margin-top:6px">Total Anggota</div>
+      </div>
+      <div style="background:var(--putih);border:2px solid var(--emas);border-radius:16px;padding:24px;text-align:center">
+        <div style="font-family:'Playfair Display',serif;font-size:36px;font-weight:900;color:var(--hijau-tua)" id="stat-aktif-a">0</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--abu);text-transform:uppercase;letter-spacing:1px;margin-top:6px">Anggota Aktif</div>
+      </div>
+      <div style="background:var(--putih);border:1px solid var(--krem-gelap);border-radius:16px;padding:24px;text-align:center">
+        <div style="font-family:'Playfair Display',serif;font-size:36px;font-weight:900;color:var(--hijau-tua)" id="stat-mitra">0</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--abu);text-transform:uppercase;letter-spacing:1px;margin-top:6px">Anggota Mitra</div>
+      </div>
+    </div>
+
+    <!-- FORM DAFTAR -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:40px">
+      <div>
+        <div class="section-tag">Formulir Pendaftaran Online</div>
+        <h2 class="section-title" style="font-size:32px">Daftar Jadi<br>Anggota TAMARA</h2>
+        <p style="font-size:16px;color:var(--abu);line-height:1.7;margin-bottom:24px">Isi formulir di bawah. Admin akan menghubungi via WhatsApp dalam 1×24 jam untuk konfirmasi dan proses selanjutnya.</p>
+        <div style="background:var(--hijau-tua);border-radius:12px;padding:16px;margin-bottom:24px">
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--emas-muda);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px">Biaya Pendaftaran</div>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div style="font-size:15px;color:rgba(255,255,255,0.7)">Iuran Keanggotaan</div>
+            <div style="font-family:'Playfair Display',serif;font-size:24px;font-weight:900;color:var(--emas-muda)">Rp 25.000</div>
+          </div>
+          <div style="font-size:13px;color:rgba(255,255,255,0.4);margin-top:6px">Dibayar saat verifikasi dengan Admin · Tidak dikembalikan</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Nama Lengkap *</label>
+          <input type="text" class="form-input" id="reg-nama2" placeholder="Sesuai KTP">
+        </div>
+        <div class="form-group">
+          <label class="form-label">No. HP / WA *</label>
+          <input type="text" class="form-input" id="reg-hp2" placeholder="083x-xxxx-xxxx">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Alamat / RT-RW *</label>
+          <input type="text" class="form-input" id="reg-alamat2" placeholder="RT 02/03 Kp. Cibatu">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Pekerjaan</label>
+          <input type="text" class="form-input" id="reg-kerja2" placeholder="Petani / pedagang / IRT...">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Tujuan Bergabung *</label>
+          <select class="form-input" id="reg-tujuan2">
+            <option value="">Pilih tujuan...</option>
+            <option>Menabung saja</option>
+            <option>Pinjaman kebutuhan keluarga</option>
+            <option>Pinjaman modal usaha (Ujrah)</option>
+            <option>Pinjaman usaha bagi hasil (Mudharabah)</option>
+            <option>Investasi program TAMARA</option>
+            <option>Donasi untuk komunitas</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">No. Rekening (opsional)</label>
+          <input type="text" class="form-input" id="reg-rek2" placeholder="Untuk pencairan dana...">
+        </div>
+        <div style="background:var(--krem);border-radius:10px;padding:14px;margin-bottom:20px;font-size:14px;color:var(--abu)">
+          <b style="color:var(--hijau-tua)">Dengan mendaftar saya menyatakan:</b><br>
+          ✓ Data yang saya isi adalah benar<br>
+          ✓ Bersedia membayar iuran Rp 25.000 saat pendaftaran<br>
+          ✓ Bersedia mengikuti SOP TAMARA<br>
+          ✓ Menyetujui akad Wadiah atas tabungan yang dititipkan
+        </div>
+        <button class="btn-primary" style="width:100%;padding:16px" onclick="daftarAnggota()">📲 Kirim Pendaftaran via WhatsApp</button>
+      </div>
+
+      <!-- LEVEL KEANGGOTAAN -->
+      <div>
+        <div class="section-tag">Level Keanggotaan</div>
+        <h2 class="section-title" style="font-size:32px">Naik Level,<br>Makin Banyak Manfaat</h2>
+        <div style="display:flex;flex-direction:column;gap:16px;margin-top:8px">
+          <div style="background:var(--putih);border-radius:16px;padding:24px;border:1px solid var(--krem-gelap)">
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+              <div style="width:40px;height:40px;background:#e8f5e9;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px">🌱</div>
+              <div>
+                <div style="font-family:'Playfair Display',serif;font-weight:700;font-size:18px;color:var(--hijau-tua)">Anggota Biasa</div>
+                <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--abu)">Daftar + KTP + Rp 25.000</div>
+              </div>
+            </div>
+            <div style="font-size:14px;color:var(--abu);line-height:1.6">✓ Akses tabungan Wadiah<br>✓ Pinjaman maks <b>Rp 500.000</b><br>✓ Informasi program TAMARA</div>
+          </div>
+          <div style="background:var(--putih);border-radius:16px;padding:24px;border:2px solid var(--emas)">
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+              <div style="width:40px;height:40px;background:#fff3cd;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px">🌾</div>
+              <div>
+                <div style="font-family:'Playfair Display',serif;font-weight:700;font-size:18px;color:var(--hijau-tua)">Anggota Aktif</div>
+                <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--abu)">Setor Wadiah Rp 200.000</div>
+              </div>
+            </div>
+            <div style="font-size:14px;color:var(--abu);line-height:1.6">✓ Semua fitur Anggota Biasa<br>✓ Pinjaman maks <b>Rp 2.000.000</b><br>✓ Akses program investasi<br>✓ Prioritas ACC pinjaman</div>
+          </div>
+          <div style="background:var(--hijau-tua);border-radius:16px;padding:24px">
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+              <div style="width:40px;height:40px;background:rgba(201,162,39,0.2);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px">👑</div>
+              <div>
+                <div style="font-family:'Playfair Display',serif;font-weight:700;font-size:18px;color:var(--emas-muda)">Anggota Mitra</div>
+                <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:rgba(255,255,255,0.4)">Rekrut 5 anggota baru</div>
+              </div>
+            </div>
+            <div style="font-size:14px;color:rgba(255,255,255,0.7);line-height:1.6">✓ Semua fitur Anggota Aktif<br>✓ Pinjaman maks <b style="color:var(--emas-muda)">Rp 5.000.000</b><br>✓ Prioritas Mudharabah<br>✓ Komisi rekrutmen anggota baru</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DAFTAR ANGGOTA PUBLIK -->
+    <div style="margin-top:64px">
+      <div class="section-tag">Komunitas TAMARA</div>
+      <h2 class="section-title">Anggota yang Sudah Bergabung</h2>
+      <div id="public-anggota-list" style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:24px">
+        <div style="text-align:center;padding:40px;color:var(--abu);grid-column:1/-1">
+          <div style="font-size:48px;margin-bottom:12px">👥</div>
+          <div>Jadilah yang pertama bergabung!</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <footer>
+    <div class="footer-logo">TAMARA</div>
+    <div class="footer-tagline">Bebas Rentenir. Halal. Amanah. Milik Kita Bersama.</div>
+    <div class="footer-copy">© 2026 Bahula Tani Nusantara · Gunungguruh, Sukabumi</div>
+  </footer>
+</div>
+
+<!-- ========================= NABUNG ========================= -->
+<div id="page-nabung" class="page">
+  <div class="tentang-hero">
+    <h1>💜 Program Tabungan</h1>
+    <p>Titipkan, tambah, dan tarik kapan saja — Akad Wadiah Yad Amanah</p>
+  </div>
+  <div class="section">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:40px">
+      <div>
+        <div class="section-tag">Cara Menabung</div>
+        <h2 class="section-title" style="font-size:32px">Tabungan Halal,<br>Aman & Fleksibel</h2>
+        <p style="font-size:16px;color:var(--abu);line-height:1.7;margin-bottom:32px">Tabungan TAMARA menggunakan akad <b>Wadiah Yad Amanah</b> — titipan murni yang sepenuhnya milik anggota. Tidak ada potongan, tidak ada bunga, tidak ada syarat penahanan.</p>
+
+        <div style="display:flex;flex-direction:column;gap:16px;margin-bottom:32px">
+          <div style="display:flex;gap:16px;align-items:flex-start">
+            <div style="width:48px;height:48px;background:var(--hijau-tua);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">✓</div>
+            <div><b style="color:var(--hijau-tua)">Bisa ditambah kapan saja</b><br><span style="font-size:15px;color:var(--abu)">Nominal bebas, tidak ada batas minimum tambahan</span></div>
+          </div>
+          <div style="display:flex;gap:16px;align-items:flex-start">
+            <div style="width:48px;height:48px;background:var(--hijau-tua);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">✓</div>
+            <div><b style="color:var(--hijau-tua)">Bisa ditarik kapan saja</b><br><span style="font-size:15px;color:var(--abu)">Tidak perlu alasan, tidak ada denda penarikan</span></div>
+          </div>
+          <div style="display:flex;gap:16px;align-items:flex-start">
+            <div style="width:48px;height:48px;background:var(--hijau-tua);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">✓</div>
+            <div><b style="color:var(--hijau-tua)">Tidak perlu meminjam</b><br><span style="font-size:15px;color:var(--abu)">Anggota bisa menabung saja tanpa mengajukan pinjaman</span></div>
+          </div>
+          <div style="display:flex;gap:16px;align-items:flex-start">
+            <div style="width:48px;height:48px;background:var(--hijau-tua);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">✓</div>
+            <div><b style="color:var(--hijau-tua)">Tidak aktif tetap aman</b><br><span style="font-size:15px;color:var(--abu)">Tabungan tidak hangus meskipun lama tidak bertransaksi</span></div>
+          </div>
+        </div>
+
+        <!-- REKENING SETOR -->
+        <div style="background:var(--hijau-tua);border-radius:16px;padding:24px">
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--emas-muda);text-transform:uppercase;letter-spacing:1px;margin-bottom:16px">🏦 Rekening Setor Wadiah</div>
+          <div style="background:rgba(255,255,255,0.08);border-radius:10px;padding:14px;margin-bottom:12px">
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:rgba(255,255,255,0.4);margin-bottom:4px">BANK BJB</div>
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:20px;font-weight:700;color:var(--emas-muda)">0160405831100</div>
+            <div style="font-size:13px;color:rgba(255,255,255,0.5);margin-top:4px">a.n. HUDRI</div>
+          </div>
+          <div style="background:rgba(255,255,255,0.08);border-radius:10px;padding:14px">
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:rgba(255,255,255,0.4);margin-bottom:4px">BANK MANDIRI</div>
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:20px;font-weight:700;color:var(--emas-muda)">1820016298168</div>
+            <div style="font-size:13px;color:rgba(255,255,255,0.5);margin-top:4px">a.n. TAMARA / BTN</div>
+          </div>
+          <div style="margin-top:12px;font-size:12px;color:rgba(255,255,255,0.3)">* Kirim bukti transfer ke WA Admin setelah setor</div>
+        </div>
+      </div>
+
+      <!-- FORM SETOR / TARIK -->
+      <div>
+        <div style="background:var(--putih);border-radius:20px;padding:32px;border:1px solid var(--krem-gelap);box-shadow:0 4px 20px rgba(0,0,0,0.05);margin-bottom:24px">
+          <h3 style="font-family:'Playfair Display',serif;font-size:22px;color:var(--hijau-tua);margin-bottom:20px">📥 Konfirmasi Setor Tabungan</h3>
+          <div class="form-group">
+            <label class="form-label">Nama Lengkap</label>
+            <input type="text" class="form-input" id="nb-nama" placeholder="Nama anggota...">
+          </div>
+          <div class="form-group">
+            <label class="form-label">No. HP / WA</label>
+            <input type="text" class="form-input" id="nb-hp" placeholder="083x-xxxx-xxxx">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Jumlah Setor (Rp)</label>
+            <input type="number" class="form-input" id="nb-jumlah" placeholder="200000">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Bank Tujuan Transfer</label>
+            <select class="form-input" id="nb-bank">
+              <option value="BJB 0160405831100 a.n. Hudri">BJB — 0160405831100 a.n. Hudri</option>
+              <option value="Mandiri 1820016298168 a.n. TAMARA">Mandiri — 1820016298168</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Upload Bukti Transfer</label>
+            <input type="file" class="form-input" id="nb-bukti" accept="image/*" style="padding:8px">
+          </div>
+          <button class="btn-primary" style="width:100%;padding:14px;margin-top:8px" onclick="konfirmasiSetor()">📲 Konfirmasi via WhatsApp</button>
+        </div>
+
+        <div style="background:var(--putih);border-radius:20px;padding:32px;border:1px solid var(--krem-gelap);box-shadow:0 4px 20px rgba(0,0,0,0.05)">
+          <h3 style="font-family:'Playfair Display',serif;font-size:22px;color:var(--hijau-tua);margin-bottom:20px">📤 Permintaan Tarik Wadiah</h3>
+          <div class="form-group">
+            <label class="form-label">Nama Lengkap</label>
+            <input type="text" class="form-input" id="tw-nama" placeholder="Nama anggota...">
+          </div>
+          <div class="form-group">
+            <label class="form-label">No. HP / WA</label>
+            <input type="text" class="form-input" id="tw-hp" placeholder="083x-xxxx-xxxx">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Jumlah Tarik (Rp)</label>
+            <input type="number" class="form-input" id="tw-jumlah" placeholder="Jumlah yang ingin ditarik">
+          </div>
+          <div class="form-group">
+            <label class="form-label">No. Rekening Tujuan</label>
+            <input type="text" class="form-input" id="tw-rek" placeholder="Bank — No. Rekening">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Keterangan</label>
+            <input type="text" class="form-input" id="tw-ket" placeholder="Alasan penarikan (opsional)">
+          </div>
+          <button class="btn-outline" style="width:100%;padding:14px;margin-top:8px;border-color:var(--hijau);color:var(--hijau)" onclick="mintaTarik()">📲 Ajukan Penarikan via WA</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <footer>
+    <div class="footer-logo">TAMARA</div>
+    <div class="footer-tagline">Bebas Rentenir. Halal. Amanah. Milik Kita Bersama.</div>
+    <div class="footer-copy">© 2026 Bahula Tani Nusantara · Gunungguruh, Sukabumi</div>
+  </footer>
+</div>
+
+<!-- ========================= DONASI ========================= -->
+<div id="page-donasi" class="page">
+  <div class="tentang-hero">
+    <h1>❤️ Program Donasi</h1>
+    <p>Sedekah jariyah untuk komunitas — halal, transparan, dan berdampak nyata</p>
+  </div>
+  <div class="section">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:40px">
+      <div>
+        <div class="section-tag">Donasi untuk Komunitas</div>
+        <h2 class="section-title" style="font-size:32px">Sedekahmu<br>Bergerak di Sini</h2>
+        <p style="font-size:16px;color:var(--abu);line-height:1.7;margin-bottom:24px">Dana donasi dikelola secara transparan oleh BTN untuk program-program pemberdayaan masyarakat Gunungguruh dan sekitarnya.</p>
+
+        <!-- PROGRAM DONASI -->
+        <div style="display:flex;flex-direction:column;gap:16px;margin-bottom:32px">
+          <div style="background:var(--putih);border-radius:16px;padding:20px;border-left:4px solid var(--hijau-muda);box-shadow:0 2px 10px rgba(0,0,0,0.05)">
+            <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--hijau-tua);margin-bottom:6px">🎒 Beasiswa Anak Petani</div>
+            <div style="font-size:14px;color:var(--abu);line-height:1.6">Bantu anak-anak keluarga petani agar tetap bisa bersekolah dan meraih impian.</div>
+          </div>
+          <div style="background:var(--putih);border-radius:16px;padding:20px;border-left:4px solid var(--emas);box-shadow:0 2px 10px rgba(0,0,0,0.05)">
+            <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--hijau-tua);margin-bottom:6px">🏥 Dana Kesehatan Warga</div>
+            <div style="font-size:14px;color:var(--abu);line-height:1.6">Bantu warga kurang mampu yang membutuhkan biaya pengobatan dan perawatan kesehatan.</div>
+          </div>
+          <div style="background:var(--putih);border-radius:16px;padding:20px;border-left:4px solid var(--hijau-muda);box-shadow:0 2px 10px rgba(0,0,0,0.05)">
+            <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--hijau-tua);margin-bottom:6px">🌐 Internet Desa Saung Starling</div>
+            <div style="font-size:14px;color:var(--abu);line-height:1.6">Dukung program internet satelit desa agar warga terpencil bisa akses informasi dan pendidikan digital.</div>
+          </div>
+          <div style="background:var(--putih);border-radius:16px;padding:20px;border-left:4px solid var(--emas);box-shadow:0 2px 10px rgba(0,0,0,0.05)">
+            <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--hijau-tua);margin-bottom:6px">🕌 Sosial & Keagamaan</div>
+            <div style="font-size:14px;color:var(--abu);line-height:1.6">Dukung kegiatan majelis taklim, pesantren, dan kegiatan sosial keagamaan di lingkungan Gunungguruh.</div>
+          </div>
+        </div>
+
+        <!-- REKENING DONASI -->
+        <div style="background:var(--hijau-tua);border-radius:16px;padding:24px">
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--emas-muda);text-transform:uppercase;letter-spacing:1px;margin-bottom:16px">❤️ Rekening Donasi</div>
+          <div style="background:rgba(255,255,255,0.08);border-radius:10px;padding:14px;margin-bottom:12px">
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:rgba(255,255,255,0.4);margin-bottom:4px">BANK BJB</div>
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:20px;font-weight:700;color:var(--emas-muda)">0160405831100</div>
+            <div style="font-size:13px;color:rgba(255,255,255,0.5);margin-top:4px">a.n. HUDRI · Berita: DONASI TAMARA</div>
+          </div>
+          <div style="background:rgba(255,255,255,0.08);border-radius:10px;padding:14px">
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:rgba(255,255,255,0.4);margin-bottom:4px">BANK MANDIRI</div>
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:20px;font-weight:700;color:var(--emas-muda)">1820016298168</div>
+            <div style="font-size:13px;color:rgba(255,255,255,0.5);margin-top:4px">Berita: DONASI TAMARA</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FORM DONASI -->
+      <div>
+        <div style="background:var(--putih);border-radius:20px;padding:32px;border:2px solid var(--emas);box-shadow:0 4px 20px rgba(0,0,0,0.05);margin-bottom:24px">
+          <h3 style="font-family:'Playfair Display',serif;font-size:22px;color:var(--hijau-tua);margin-bottom:6px">❤️ Form Donasi</h3>
+          <p style="font-size:14px;color:var(--abu);margin-bottom:20px">Donasi kamu akan dikonfirmasi admin dan dilaporkan secara transparan.</p>
+
+          <!-- NOMINAL CEPAT -->
+          <div style="margin-bottom:16px">
+            <label class="form-label">Pilih Nominal</label>
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px">
+              <button onclick="setDonasi(25000)" style="padding:10px;border:2px solid var(--krem-gelap);border-radius:8px;background:var(--krem);font-family:'IBM Plex Mono',monospace;font-size:12px;cursor:pointer;transition:all 0.2s" class="donasi-quick">Rp 25rb</button>
+              <button onclick="setDonasi(50000)" style="padding:10px;border:2px solid var(--krem-gelap);border-radius:8px;background:var(--krem);font-family:'IBM Plex Mono',monospace;font-size:12px;cursor:pointer;transition:all 0.2s" class="donasi-quick">Rp 50rb</button>
+              <button onclick="setDonasi(100000)" style="padding:10px;border:2px solid var(--krem-gelap);border-radius:8px;background:var(--krem);font-family:'IBM Plex Mono',monospace;font-size:12px;cursor:pointer;transition:all 0.2s" class="donasi-quick">Rp 100rb</button>
+              <button onclick="setDonasi(250000)" style="padding:10px;border:2px solid var(--krem-gelap);border-radius:8px;background:var(--krem);font-family:'IBM Plex Mono',monospace;font-size:12px;cursor:pointer;transition:all 0.2s" class="donasi-quick">Rp 250rb</button>
+              <button onclick="setDonasi(500000)" style="padding:10px;border:2px solid var(--krem-gelap);border-radius:8px;background:var(--krem);font-family:'IBM Plex Mono',monospace;font-size:12px;cursor:pointer;transition:all 0.2s" class="donasi-quick">Rp 500rb</button>
+              <button onclick="setDonasi(1000000)" style="padding:10px;border:2px solid var(--krem-gelap);border-radius:8px;background:var(--krem);font-family:'IBM Plex Mono',monospace;font-size:12px;cursor:pointer;transition:all 0.2s" class="donasi-quick">Rp 1jt</button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Nominal Donasi (Rp)</label>
+            <input type="number" class="form-input" id="don-jumlah" placeholder="Masukkan nominal...">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Nama Donatur</label>
+            <input type="text" class="form-input" id="don-nama" placeholder="Nama / Hamba Allah">
+          </div>
+          <div class="form-group">
+            <label class="form-label">No. HP / WA</label>
+            <input type="text" class="form-input" id="don-hp" placeholder="083x-xxxx-xxxx">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Program yang Didukung</label>
+            <select class="form-input" id="don-program">
+              <option value="Bebas pilih — sesuaikan kebutuhan">Bebas pilih / Terserah Admin</option>
+              <option value="Beasiswa Anak Petani">Beasiswa Anak Petani</option>
+              <option value="Dana Kesehatan Warga">Dana Kesehatan Warga</option>
+              <option value="Internet Desa Saung Starling">Internet Desa Saung Starling</option>
+              <option value="Sosial & Keagamaan">Sosial & Keagamaan</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Upload Bukti Transfer</label>
+            <input type="file" class="form-input" id="don-bukti" accept="image/*" style="padding:8px">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Pesan / Doa (opsional)</label>
+            <textarea class="form-input" id="don-pesan" rows="2" placeholder="Semoga bermanfaat..."></textarea>
+          </div>
+          <button class="btn-primary" style="width:100%;padding:14px;margin-top:4px;background:var(--emas);color:var(--hijau-tua)" onclick="kirimDonasi()">❤️ Konfirmasi Donasi via WhatsApp</button>
+        </div>
+
+        <!-- TRANSPARANSI -->
+        <div style="background:var(--krem);border-radius:16px;padding:20px;border:1px solid var(--krem-gelap)">
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--hijau);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px">📊 Transparansi Donasi</div>
+          <p style="font-size:14px;color:var(--abu);line-height:1.7">Setiap donasi akan dicatat dan dilaporkan secara terbuka setiap bulan kepada seluruh anggota dan donatur melalui WhatsApp dan website ini.</p>
+          <div style="margin-top:12px;font-size:13px;color:var(--hijau);font-weight:700">
+            📧 malviejayagroup@gmail.com<br>
+            📱 083971666136
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <footer>
+    <div class="footer-logo">TAMARA</div>
+    <div class="footer-tagline">Bebas Rentenir. Halal. Amanah. Milik Kita Bersama.</div>
+    <div class="footer-copy">© 2026 Bahula Tani Nusantara · Gunungguruh, Sukabumi</div>
+  </footer>
+</div>
+
+<!-- ========================= INVESTASI ========================= -->
+<div id="page-investasi" class="page">
+  <div style="background:linear-gradient(135deg,#0d3d21,#1a6b3c,#1e5c2e);padding:80px 24px;text-align:center;position:relative;overflow:hidden">
+    <div style="position:absolute;inset:0;background:radial-gradient(circle at 70% 30%,rgba(201,162,39,0.15),transparent 60%);pointer-events:none"></div>
+    <div style="position:relative;z-index:2">
+      <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(201,162,39,0.2);border:1px solid rgba(201,162,39,0.4);border-radius:30px;padding:6px 16px;margin-bottom:20px">
+        <div style="width:6px;height:6px;background:var(--emas);border-radius:50%;animation:pulse 2s infinite"></div>
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--emas-muda);letter-spacing:1px;text-transform:uppercase">Program Investasi Syariah · Mudharabah</span>
+      </div>
+      <h1 style="font-family:'Playfair Display',serif;font-size:clamp(36px,5vw,64px);color:var(--emas-muda);margin-bottom:16px;font-weight:900">Investasi Halal<br>Profit Nyata</h1>
+      <p style="font-size:18px;color:rgba(255,255,255,0.6);max-width:600px;margin:0 auto">Bergabung dalam program investasi syariah bersama Gunung Artha Investama & Bahula Tani Nusantara. Profit 30% dari keuntungan usaha.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <!-- PROGRAM INVESTASI -->
+    <div class="section-tag">Program Investasi</div>
+    <h2 class="section-title">Pilih Program<br>Investasi Anda</h2>
+    <p class="section-desc">Semua program menggunakan akad Mudharabah — bagi hasil halal. Investor mendapat 30% dari profit bersih.</p>
+
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:8px">
+
+      <!-- DOMBA -->
+      <div style="background:var(--putih);border-radius:20px;overflow:hidden;border:1px solid var(--krem-gelap);box-shadow:0 4px 20px rgba(0,0,0,0.06);transition:all 0.3s" onmouseover="this.style.transform='translateY(-6px)'" onmouseout="this.style.transform='translateY(0)'">
+        <div style="background:linear-gradient(135deg,#2d5a1b,#4a8c2a);padding:28px;text-align:center">
+          <div style="font-size:56px;margin-bottom:8px">🐑</div>
+          <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:900;color:white">Ternak Domba</div>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:rgba(255,255,255,0.5);margin-top:4px">Bina Tani Nusantara</div>
+        </div>
+        <div style="padding:24px">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--krem-gelap)">
+            <span style="font-size:14px;color:var(--abu)">Modal Investasi</span>
+            <span style="font-family:'IBM Plex Mono',monospace;font-weight:700;color:var(--hijau-tua)">Rp 5.000.000</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--krem-gelap)">
+            <span style="font-size:14px;color:var(--abu)">Bagi Hasil Investor</span>
+            <span style="font-family:'IBM Plex Mono',monospace;font-weight:700;color:var(--emas)">30% Profit</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--krem-gelap)">
+            <span style="font-size:14px;color:var(--abu)">Akad</span>
+            <span style="font-family:'IBM Plex Mono',monospace;font-weight:700;color:var(--hijau)">Mudharabah</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0">
+            <span style="font-size:14px;color:var(--abu)">Pengelola</span>
+            <span style="font-size:13px;font-weight:700;color:var(--hijau-tua)">Bina Tani Nusantara</span>
+          </div>
+          <button class="btn-primary" style="width:100%;margin-top:16px;padding:12px" onclick="investNow('Ternak Domba','Rp 5.000.000','Bina Tani Nusantara')">Investasi Sekarang</button>
+        </div>
+      </div>
+
+      <!-- ULET HONGKONG -->
+      <div style="background:var(--putih);border-radius:20px;overflow:hidden;border:2px solid var(--emas);box-shadow:0 4px 24px rgba(201,162,39,0.2);transition:all 0.3s;position:relative" onmouseover="this.style.transform='translateY(-6px)'" onmouseout="this.style.transform='translateY(0)'">
+        <div style="position:absolute;top:16px;right:16px;background:var(--emas);color:var(--hijau-tua);font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;padding:4px 10px;border-radius:20px;z-index:2">POPULER</div>
+        <div style="background:linear-gradient(135deg,#7a4f00,#c9a227);padding:28px;text-align:center">
+          <div style="font-size:56px;margin-bottom:8px">🐛</div>
+          <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:900;color:white">Ulet Hongkong</div>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:rgba(255,255,255,0.5);margin-top:4px">Arthaqua · BTN</div>
+        </div>
+        <div style="padding:24px">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--krem-gelap)">
+            <span style="font-size:14px;color:var(--abu)">Modal Investasi</span>
+            <span style="font-family:'IBM Plex Mono',monospace;font-weight:700;color:var(--hijau-tua)">Rp 5.000.000</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--krem-gelap)">
+            <span style="font-size:14px;color:var(--abu)">Bagi Hasil Investor</span>
+            <span style="font-family:'IBM Plex Mono',monospace;font-weight:700;color:var(--emas)">30% Profit</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--krem-gelap)">
+            <span style="font-size:14px;color:var(--abu)">Akad</span>
+            <span style="font-family:'IBM Plex Mono',monospace;font-weight:700;color:var(--hijau)">Mudharabah</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0">
+            <span style="font-size:14px;color:var(--abu)">Pengelola</span>
+            <span style="font-size:13px;font-weight:700;color:var(--hijau-tua)">Arthaqua · BTN</span>
+          </div>
+          <button class="btn-primary" style="width:100%;margin-top:16px;padding:12px;background:var(--emas);color:var(--hijau-tua)" onclick="investNow('Ulet Hongkong','Rp 5.000.000','Arthaqua · BTN')">Investasi Sekarang</button>
+        </div>
+      </div>
+
+      <!-- GA-I -->
+      <div style="background:var(--putih);border-radius:20px;overflow:hidden;border:1px solid var(--krem-gelap);box-shadow:0 4px 20px rgba(0,0,0,0.06);transition:all 0.3s" onmouseover="this.style.transform='translateY(-6px)'" onmouseout="this.style.transform='translateY(0)'">
+        <div style="background:linear-gradient(135deg,#1e3a5f,#2d5a8e);padding:28px;text-align:center">
+          <div style="font-size:56px;margin-bottom:8px">📦</div>
+          <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:900;color:white">Gunung Artha</div>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:rgba(255,255,255,0.5);margin-top:4px">GA-I Investama</div>
+        </div>
+        <div style="padding:24px">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--krem-gelap)">
+            <span style="font-size:14px;color:var(--abu)">Modal Investasi</span>
+            <span style="font-family:'IBM Plex Mono',monospace;font-weight:700;color:var(--hijau-tua)">Rp 5.000.000</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--krem-gelap)">
+            <span style="font-size:14px;color:var(--abu)">Bagi Hasil Investor</span>
+            <span style="font-family:'IBM Plex Mono',monospace;font-weight:700;color:var(--emas)">30% Profit</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--krem-gelap)">
+            <span style="font-size:14px;color:var(--abu)">Akad</span>
+            <span style="font-family:'IBM Plex Mono',monospace;font-weight:700;color:var(--hijau)">Mudharabah</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0">
+            <span style="font-size:14px;color:var(--abu)">Pengelola</span>
+            <span style="font-size:13px;font-weight:700;color:var(--hijau-tua)">Gunung Artha Investama</span>
+          </div>
+          <button class="btn-primary" style="width:100%;margin-top:16px;padding:12px" onclick="investNow('Gunung Artha Investama','Rp 5.000.000','GA-I Investama')">Investasi Sekarang</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- FORM INVESTASI -->
+    <div style="margin-top:64px;display:grid;grid-template-columns:1fr 1fr;gap:40px">
+      <div>
+        <div class="section-tag">Cara Bergabung</div>
+        <h2 class="section-title" style="font-size:32px">Proses Investasi<br>Mudah & Transparan</h2>
+        <div style="display:flex;flex-direction:column;gap:20px;margin-top:8px">
+          <div style="display:flex;gap:16px;align-items:flex-start">
+            <div style="width:36px;height:36px;background:var(--hijau-tua);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-weight:900;color:var(--emas-muda);flex-shrink:0">1</div>
+            <div><b style="color:var(--hijau-tua)">Pilih program investasi</b><br><span style="font-size:14px;color:var(--abu)">Pilih salah satu program di atas sesuai minat Anda</span></div>
+          </div>
+          <div style="display:flex;gap:16px;align-items:flex-start">
+            <div style="width:36px;height:36px;background:var(--hijau-tua);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-weight:900;color:var(--emas-muda);flex-shrink:0">2</div>
+            <div><b style="color:var(--hijau-tua)">Transfer modal Rp 5.000.000</b><br><span style="font-size:14px;color:var(--abu)">Transfer ke rekening resmi TAMARA/BTN</span></div>
+          </div>
+          <div style="display:flex;gap:16px;align-items:flex-start">
+            <div style="width:36px;height:36px;background:var(--hijau-tua);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-weight:900;color:var(--emas-muda);flex-shrink:0">3</div>
+            <div><b style="color:var(--hijau-tua)">Konfirmasi & tanda tangan akad</b><br><span style="font-size:14px;color:var(--abu)">Admin menghubungi untuk akad Mudharabah tertulis</span></div>
+          </div>
+          <div style="display:flex;gap:16px;align-items:flex-start">
+            <div style="width:36px;height:36px;background:var(--emas);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-weight:900;color:var(--hijau-tua);flex-shrink:0">4</div>
+            <div><b style="color:var(--hijau-tua)">Terima laporan profit bulanan</b><br><span style="font-size:14px;color:var(--abu)">30% profit dikirim ke rekening investor setiap bulan</span></div>
+          </div>
+        </div>
+
+        <!-- REKENING INVESTASI -->
+        <div style="background:var(--hijau-tua);border-radius:16px;padding:24px;margin-top:32px">
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--emas-muda);text-transform:uppercase;letter-spacing:1px;margin-bottom:16px">💰 Rekening Investasi</div>
+          <div style="background:rgba(255,255,255,0.08);border-radius:10px;padding:14px;margin-bottom:12px">
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:rgba(255,255,255,0.4);margin-bottom:4px">BANK BJB</div>
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:20px;font-weight:700;color:var(--emas-muda)">0160405831100</div>
+            <div style="font-size:13px;color:rgba(255,255,255,0.5);margin-top:4px">a.n. HUDRI · Berita: INVESTASI [NAMA PROGRAM]</div>
+          </div>
+          <div style="background:rgba(255,255,255,0.08);border-radius:10px;padding:14px">
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:rgba(255,255,255,0.4);margin-bottom:4px">BANK MANDIRI</div>
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:20px;font-weight:700;color:var(--emas-muda)">1820016298168</div>
+            <div style="font-size:13px;color:rgba(255,255,255,0.5);margin-top:4px">Berita: INVESTASI [NAMA PROGRAM]</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FORM -->
+      <div style="background:var(--putih);border-radius:20px;padding:32px;border:1px solid var(--krem-gelap);box-shadow:0 4px 20px rgba(0,0,0,0.05)">
+        <h3 style="font-family:'Playfair Display',serif;font-size:22px;color:var(--hijau-tua);margin-bottom:6px" id="invest-form-title">💰 Form Investasi</h3>
+        <p style="font-size:14px;color:var(--abu);margin-bottom:20px">Isi form dan upload bukti transfer. Admin akan menghubungi untuk proses akad.</p>
+        <div class="form-group">
+          <label class="form-label">Nama Lengkap Investor *</label>
+          <input type="text" class="form-input" id="inv-nama" placeholder="Nama lengkap sesuai KTP">
+        </div>
+        <div class="form-group">
+          <label class="form-label">No. HP / WA *</label>
+          <input type="text" class="form-input" id="inv-hp" placeholder="083x-xxxx-xxxx">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Program Investasi *</label>
+          <select class="form-input" id="inv-program">
+            <option value="Ternak Domba — Bina Tani Nusantara">🐑 Ternak Domba — Bina Tani Nusantara</option>
+            <option value="Ulet Hongkong — Arthaqua · BTN">🐛 Ulet Hongkong — Arthaqua · BTN</option>
+            <option value="Gunung Artha Investama — GA-I">📦 Gunung Artha Investama — GA-I</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Jumlah Unit Investasi</label>
+          <select class="form-input" id="inv-unit" onchange="updateInvTotal()">
+            <option value="1">1 Unit — Rp 5.000.000</option>
+            <option value="2">2 Unit — Rp 10.000.000</option>
+            <option value="3">3 Unit — Rp 15.000.000</option>
+            <option value="5">5 Unit — Rp 25.000.000</option>
+            <option value="10">10 Unit — Rp 50.000.000</option>
+          </select>
+        </div>
+        <div style="background:var(--krem);border-radius:10px;padding:14px;margin-bottom:16px">
+          <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+            <span style="font-size:13px;color:var(--abu)">Total Modal</span>
+            <span style="font-family:'IBM Plex Mono',monospace;font-weight:700;color:var(--hijau-tua)" id="inv-total-modal">Rp 5.000.000</span>
+          </div>
+          <div style="display:flex;justify-content:space-between">
+            <span style="font-size:13px;color:var(--abu)">Est. Profit 30% Investor</span>
+            <span style="font-family:'IBM Plex Mono',monospace;font-weight:700;color:var(--emas)" id="inv-est-profit">Tergantung profit usaha</span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">No. Rekening untuk Profit</label>
+          <input type="text" class="form-input" id="inv-rek" placeholder="Bank — No. Rekening a.n. ...">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Upload Bukti Transfer</label>
+          <input type="file" class="form-input" id="inv-bukti" accept="image/*" style="padding:8px">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Pertanyaan / Catatan</label>
+          <textarea class="form-input" id="inv-catatan" rows="2" placeholder="Ada pertanyaan seputar program?"></textarea>
+        </div>
+        <button class="btn-primary" style="width:100%;padding:14px;margin-top:4px" onclick="kirimInvestasi()">📲 Daftar Investasi via WhatsApp</button>
+        <p style="font-size:12px;color:var(--abu);text-align:center;margin-top:12px">Admin akan menghubungi dalam 1×24 jam untuk proses akad Mudharabah tertulis</p>
+      </div>
+    </div>
+
+    <!-- AREA INVESTOR LOGIN -->
+    <div style="margin-top:64px">
+      <div class="section-tag">Area Khusus Investor</div>
+      <h2 class="section-title">Pantau Investasi Anda</h2>
+      <div id="investor-login-area">
+        <div style="background:var(--putih);border-radius:20px;padding:40px;border:1px solid var(--krem-gelap);max-width:400px;margin:0 auto;text-align:center;box-shadow:0 4px 20px rgba(0,0,0,0.05)">
+          <div style="font-size:48px;margin-bottom:16px">🔐</div>
+          <h3 style="font-family:'Playfair Display',serif;font-size:22px;color:var(--hijau-tua);margin-bottom:8px">Login Investor</h3>
+          <p style="font-size:14px;color:var(--abu);margin-bottom:24px">Masuk untuk melihat perkembangan investasi dan laporan profit Anda</p>
+          <div class="form-group" style="text-align:left">
+            <label class="form-label">Kode Investor</label>
+            <input type="text" class="form-input" id="inv-kode" placeholder="Kode diberikan oleh Admin">
+          </div>
+          <div class="form-group" style="text-align:left">
+            <label class="form-label">No. HP / WA</label>
+            <input type="text" class="form-input" id="inv-login-hp" placeholder="083x-xxxx-xxxx">
+          </div>
+          <button class="calc-btn" onclick="loginInvestor()" style="background:var(--hijau-tua);color:var(--emas-muda)">Masuk ke Area Investor</button>
+        </div>
+      </div>
+
+      <!-- DASHBOARD INVESTOR (hidden by default) -->
+      <div id="investor-dashboard" style="display:none">
+        <div style="background:var(--hijau-tua);border-radius:20px;padding:32px;margin-bottom:24px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px">
+            <div>
+              <div style="font-family:'Playfair Display',serif;font-size:24px;color:var(--emas-muda);font-weight:700" id="inv-dash-nama">Investor TAMARA</div>
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:rgba(255,255,255,0.4)" id="inv-dash-kode">Kode: —</div>
+            </div>
+            <button onclick="logoutInvestor()" style="padding:8px 16px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.6);border-radius:8px;font-family:'IBM Plex Mono',monospace;font-size:11px;cursor:pointer">Keluar</button>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px">
+            <div style="background:rgba(255,255,255,0.08);border-radius:12px;padding:20px;text-align:center">
+              <div style="font-family:'Playfair Display',serif;font-size:28px;font-weight:900;color:var(--emas-muda)" id="inv-dash-modal">Rp 5jt</div>
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:rgba(255,255,255,0.4);text-transform:uppercase;margin-top:4px">Modal</div>
+            </div>
+            <div style="background:rgba(255,255,255,0.08);border-radius:12px;padding:20px;text-align:center">
+              <div style="font-family:'Playfair Display',serif;font-size:28px;font-weight:900;color:var(--emas-muda)" id="inv-dash-profit">30%</div>
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:rgba(255,255,255,0.4);text-transform:uppercase;margin-top:4px">Nisbah</div>
+            </div>
+            <div style="background:rgba(201,162,39,0.2);border-radius:12px;padding:20px;text-align:center;border:1px solid rgba(201,162,39,0.3)">
+              <div style="font-family:'Playfair Display',serif;font-size:28px;font-weight:900;color:var(--emas-muda)" id="inv-dash-program">—</div>
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:rgba(255,255,255,0.4);text-transform:uppercase;margin-top:4px">Program</div>
+            </div>
+          </div>
+        </div>
+        <div style="background:var(--putih);border-radius:16px;padding:24px;border:1px solid var(--krem-gelap)">
+          <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--hijau-tua);margin-bottom:16px">📊 Riwayat Profit</div>
+          <div id="inv-riwayat-profit" style="text-align:center;padding:24px;color:var(--abu)">
+            <div style="font-size:36px;margin-bottom:8px">📈</div>
+            Laporan profit akan tampil di sini setiap bulan.<br>Hubungi Admin untuk update terbaru.
+          </div>
+          <button class="btn-primary" style="width:100%;margin-top:16px;padding:12px" onclick="tanyaAdmin()">📲 Tanya Admin via WhatsApp</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <footer>
+    <div class="footer-logo">TAMARA</div>
+    <div class="footer-tagline">Bebas Rentenir. Halal. Amanah. Milik Kita Bersama.</div>
+    <div class="footer-copy">© 2026 Bahula Tani Nusantara · Gunungguruh, Sukabumi</div>
+  </footer>
+</div>
+<!-- FLOATING WA BUTTON -->
+<a href="https://wa.me/6283971666136?text=Halo%20Admin%20TAMARA%20BTN!%20Saya%20ingin%20informasi%20lebih%20lanjut%20tentang%20TAMARA%20%F0%9F%8C%BE" target="_blank" style="
+  position:fixed; bottom:24px; right:24px; z-index:9000;
+  width:56px; height:56px; border-radius:50%;
+  background:#25D366; color:white;
+  display:flex; align-items:center; justify-content:center;
+  font-size:28px; box-shadow:0 4px 20px rgba(37,211,102,0.4);
+  text-decoration:none; transition:all 0.3s;
+" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+  💬
+</a>
+
+<script>
+// ===== STATE =====
+let anggota = JSON.parse(localStorage.getItem('tamara-anggota') || '[]');
+let pinjaman = JSON.parse(localStorage.getItem('tamara-pinjaman') || '[]');
+let tabungan = JSON.parse(localStorage.getItem('tamara-tabungan') || '[]');
+let currentLang = 'id';
+
+// ===== I18N =====
+const i18n = {
+  id: {
+    nav_beranda:'Beranda', nav_tentang:'Tentang', nav_daftar:'Cara Daftar',
+    nav_simulasi:'Simulasi', nav_kontak:'Kontak', nav_admin:'Admin',
+    hero_badge:'Syariah · Amanah · Halal',
+    hero_subtitle:'Tabungan & Pinjaman Rakyat',
+    hero_desc:'Solusi keuangan syariah untuk masyarakat kampung. Bebas dari rentenir, halal, transparan, dan milik kita bersama.',
+    hero_cta1:'Daftar Sekarang', hero_cta2:'Coba Simulasi',
+    stat_riba:'Bebas Riba', stat_ujrah:'Ujrah Maks', stat_plafon:'Plafon Awal', stat_akad:'Akad Syariah',
+    fitur_tag:'Mengapa TAMARA', fitur_title:'Beda dari Rentenir,\nBeda dari Bank Biasa',
+    f1_title:'100% Halal', f1_desc:'Akad Ujrah, Mudharabah, dan Wadiah. Tidak ada bunga, tidak ada riba.',
+    f2_title:'Milik Bersama', f2_desc:'Dana dikelola secara transparan oleh pengurus BTN.',
+    f3_title:'Proses Mudah', f3_desc:'Daftar, nabung Rp 200rb, tunggu 1 minggu. Dana cair penuh.',
+    f4_title:'Setor Mandiri', f4_desc:'Bayar cicilan via transfer bank, QRIS, atau tunai.',
+    f5_title:'Bagi Hasil Usaha', f5_desc:'Punya usaha? Ajukan pinjaman Mudharabah. Pilih sendiri nisbah bagi hasil.',
+    f6_title:'Tabungan Aman', f6_desc:'Tabungan Wadiah milik anggota sepenuhnya. Bisa ditarik kapan saja.',
+    vs_tag:'Perbandingan', vs_title:'TAMARA vs Rentenir', vs_rentenir:'Rentenir ⚠️',
+    vs_t1:'Akad halal — tidak ada riba', vs_t2:'Ujrah flat, tidak memberatkan',
+    vs_t3:'Dana cair penuh', vs_t4:'Pendekatan kekeluargaan', vs_t5:'Tabungan tetap milik anggota',
+    vs_r1:'Bunga harian hingga 20-30%', vs_r2:'Bunga berbunga — riba berlipat',
+    vs_r3:'Potongan di muka', vs_r4:'Tekanan dan ancaman', vs_r5:'Tidak ada akad resmi',
+    footer_tagline:'Bebas Rentenir. Halal. Amanah. Milik Kita Bersama.',
+    tentang_h1:'Tentang TAMARA', tentang_sub:'Gerakan pembebasan ekonomi rakyat berbasis syariah',
+    tentang_visi_h:'Visi Kami',
+    tentang_p1:'TAMARA lahir dari satu keprihatinan: rentenir telah lama mencengkeram ekonomi masyarakat kampung dengan bunga harian yang mencekik.',
+    tentang_p2:'Melalui TAMARA, Bahula Tani Nusantara membangun sistem keuangan komunitas yang adil, halal, dan sepenuhnya dikelola oleh dan untuk masyarakat.',
+    tentang_p3:'Bukan sekadar simpan pinjam — ini adalah gerakan menuju kemandirian ekonomi berbasis nilai-nilai Islam.',
+    akad_ujrah:'Biaya administrasi flat. Bukan bunga. Tidak memberatkan.',
+    akad_mudh:'Bagi hasil usaha. BTN ikut menanggung risiko bersama.',
+    akad_wad:'Titipan murni. Tabungan tetap milik anggota sepenuhnya.',
+    akad_aman:'Laporan terbuka. Dikelola bersama. Transparan penuh.',
+    struktur_tag:'Struktur Organisasi', struktur_h:'Di Bawah Naungan BTN',
+    org1:'Yayasan BTN', org1s:'Pembina & Pengawas',
+    org2:'Ketua TAMARA', org2s:'Keputusan Strategis',
+    org3:'Admin Keuangan', org3s:'Kelola Kas & Data',
+    org4:'Pendamping', org4s:'Rekrut & Dampingi',
+    daftar_h1:'Cara Daftar & Syarat', daftar_sub:'Mudah, cepat, dan transparan',
+    langkah_tag:'Langkah-langkah', langkah_h:'Mulai dalam 4 Langkah',
+    step1_t:'Daftar', step1_d:'Isi formulir pendaftaran & serahkan fotokopi KTP. Bayar iuran Rp 25.000.',
+    step2_t:'Setor Wadiah', step2_d:'Setor tabungan Wadiah Rp 200.000. Uang ini tetap milikmu.',
+    step3_t:'Tunggu ACC', step3_d:'Proses verifikasi 1 minggu. Admin akan menghubungi via WhatsApp.',
+    step4_t:'Dana Cair', step4_d:'Dana ditransfer penuh ke rekeningmu. Cicilan dimulai minggu berikutnya.',
+    syarat_tag:'Persyaratan', syarat_h:'Syarat Keanggotaan',
+    syarat_umum:'Syarat Umum', syarat_pinjam:'Syarat Pinjaman',
+    s1:'Warga wilayah operasional TAMARA', s2:'KTP yang masih berlaku',
+    s3:'Iuran pendaftaran Rp 25.000', s4:'Bersedia mengikuti SOP TAMARA',
+    s5:'Sudah terdaftar sebagai anggota', s6:'Setor Wadiah Rp 200.000',
+    s7:'Tidak ada tunggakan macet', s8:'Mengisi formulir pengajuan pinjaman',
+    ujrah_tag:'Biaya Admin', ujrah_h:'Tabel Ujrah TAMARA',
+    ujrah_note:'Ujrah bukan bunga. Ini biaya administrasi flat yang dibayar sekali di cicilan pertama.',
+    ujrah_th1:'Besar Pinjaman', ujrah_th2:'Ujrah', ujrah_th3:'Pendamping', ujrah_th4:'Kas BTN', ujrah_th5:'Cadangan',
+    cta_h:'Siap Bergabung?', cta_p:'Hubungi Pendamping TAMARA di wilayahmu atau kunjungi kantor BTN.',
+    cta_btn:'Hubungi Kami',
+    sim_h1:'Simulasi Pinjaman', sim_sub:'Hitung estimasi cicilan sebelum mengajukan',
+    sim_form_h:'Detail Pinjaman', sim_jenis:'Jenis Pinjaman',
+    sim_opt1:'Pinjaman Reguler (Ujrah)', sim_opt2:'Pinjaman Usaha (Mudharabah)',
+    sim_jumlah:'Jumlah Pinjaman (Rp)', sim_tenor:'Tenor (Minggu)',
+    sim_nisbah:'Nisbah Bagi Hasil untuk BTN', sim_profit:'Estimasi Profit Usaha/Bulan (Rp)',
+    sim_hitung:'Hitung Simulasi', sim_result_h:'Hasil Simulasi',
+    res_pokok:'Pokok Pinjaman', res_ujrah:'Ujrah (Admin)', res_total:'Total Kembalikan',
+    res_cicilan:'Cicilan Per Minggu', res_bagi:'Bagi Hasil/Bulan untuk BTN', res_tenor:'Tenor',
+    res_note_label:'Catatan Syariah',
+    res_note_ujrah:'Ujrah dibayar di cicilan pertama. Dana cair penuh tanpa potongan di muka.',
+    res_note_mudh:'Bagi hasil dihitung dari profit bersih usaha per bulan. BTN ikut menanggung risiko.',
+    login_h:'Admin TAMARA', login_sub:'Masuk untuk kelola data anggota dan pinjaman',
+    login_user:'Username', login_pass:'Password', login_btn:'Masuk',
+    ds_anggota:'Total Anggota', ds_aktif:'Pinjaman Aktif', ds_total:'Total Disalurkan', ds_sisa:'Sisa Piutang',
+    dt_anggota:'Anggota', dt_pinjaman:'Pinjaman', dt_tabungan:'Tabungan',
+    tambah_anggota:'+ Tambah Anggota', f_nama:'Nama Lengkap', f_alamat:'Alamat / RT-RW',
+    f_hp:'No. HP / WA', f_level:'Level', level_biasa:'Anggota Biasa', level_aktif:'Anggota Aktif', level_mitra:'Anggota Mitra',
+    btn_simpan:'Simpan Anggota', daftar_anggota:'Daftar Anggota',
+    th_no:'No', th_nama:'Nama', th_alamat:'Alamat', th_hp:'HP', th_level:'Level', th_aksi:'Aksi',
+    tambah_pinjaman:'+ Tambah Pinjaman', f_peminjam:'Nama Peminjam', f_jenis:'Jenis Pinjaman',
+    jenis_ujrah:'Reguler (Ujrah)', jenis_mudh:'Usaha (Mudharabah)',
+    f_jumlah:'Jumlah (Rp)', f_tenor:'Tenor (Minggu)', btn_catat:'Catat Pinjaman',
+    daftar_pinjaman:'Daftar Pinjaman', th_jenis:'Jenis', th_jumlah:'Jumlah',
+    th_ujrah:'Ujrah', th_tenor:'Tenor', th_status:'Status',
+    catat_tabungan:'+ Catat Tabungan', f_penabung:'Nama Penabung', f_saldo:'Jumlah Setor (Rp)',
+    f_jenis_tb:'Jenis', tb_wajib:'Wadiah Wajib', tb_sukarela:'Sukarela',
+    f_ket:'Keterangan', btn_catat_tb:'Catat Tabungan',
+    riwayat_tb:'Riwayat Tabungan', th_tgl:'Tanggal', th_ket:'Keterangan',
+    kontak_h1:'Kontak & Lokasi', kontak_sub:'Hubungi kami atau kunjungi kantor BTN',
+    kontak_info_h:'Informasi Kontak',
+    k_lokasi:'Lokasi', k_wa:'WhatsApp Admin', k_wa_val:'Hubungi Pendamping di wilayahmu',
+    k_jam:'Jam Operasional', k_jam_val:'Senin – Jumat, 08.00 – 16.00 WIB',
+    k_org:'Organisasi', kontak_form_h:'Kirim Pesan',
+    k_f_nama:'Nama Lengkap', k_f_hp:'No. HP / WA', k_f_pesan:'Pesan',
+    k_btn_kirim:'Kirim via WhatsApp',
+  },
+  su: {
+    nav_beranda:'Imah', nav_tentang:'Ngeunaan', nav_daftar:'Cara Daftar',
+    nav_simulasi:'Simulasi', nav_kontak:'Kontak', nav_admin:'Admin',
+    hero_badge:'Syariah · Amanah · Halal',
+    hero_subtitle:'Tabungan & Pinjaman Rakyat',
+    hero_desc:'Solusi kauangan syariah pikeun masarakat kampung. Bébas tina rentenir, halal, transparan, jeung milik urang babarengan.',
+    hero_cta1:'Daftar Ayeuna', hero_cta2:'Coba Simulasi',
+    stat_riba:'Bébas Riba', stat_ujrah:'Ujrah Maks', stat_plafon:'Plafon Awal', stat_akad:'Akad Syariah',
+    fitur_tag:'Naha TAMARA', fitur_title:'Béda ti Rentenir,\nBéda ti Bank Biasa',
+    f1_title:'100% Halal', f1_desc:'Akad Ujrah, Mudharabah, jeung Wadiah. Teu aya bunga, teu aya riba.',
+    f2_title:'Milik Babarengan', f2_desc:'Dana dikelola sacara transparan ku pengurus BTN.',
+    f3_title:'Prosés Gampang', f3_desc:'Daftar, nabung Rp 200rb, tunggu 1 minggu. Dana cair pinuh.',
+    f4_title:'Setor Mandiri', f4_desc:'Bayar cicilan via transfer bank, QRIS, atawa tunai.',
+    f5_title:'Bagi Hasil Usaha', f5_desc:'Boga usaha? Ajukan pinjaman Mudharabah. Pilih sorangan nisbah bagi hasil.',
+    f6_title:'Tabungan Aman', f6_desc:'Tabungan Wadiah milik anggota sagemblengna. Bisa ditarik iraha waé.',
+    vs_tag:'Babandingan', vs_title:'TAMARA vs Rentenir', vs_rentenir:'Rentenir ⚠️',
+    vs_t1:'Akad halal — teu aya riba', vs_t2:'Ujrah flat, teu ngabeungbeuratan',
+    vs_t3:'Dana cair pinuh', vs_t4:'Pendekatan kekeluargaan', vs_t5:'Tabungan tetep milik anggota',
+    vs_r1:'Bunga poéan nepi ka 20-30%', vs_r2:'Bunga berbunga — riba berlipat',
+    vs_r3:'Potongan di muka', vs_r4:'Tekanan jeung ancaman', vs_r5:'Teu aya akad resmi',
+    footer_tagline:'Bébas Rentenir. Halal. Amanah. Milik Urang Babarengan.',
+    tentang_h1:'Ngeunaan TAMARA', tentang_sub:'Gerakan pembebasan ékonomi rakyat berbasis syariah',
+    tentang_visi_h:'Visi Kami',
+    tentang_p1:'TAMARA lahir tina hiji kaprihatinan: rentenir geus lila nyekek ékonomi masarakat kampung ku bunga poéan nu ngabeungbeuratan.',
+    tentang_p2:'Ngaliwatan TAMARA, BTN ngawangun sistem kauangan komunitas nu adil, halal, jeung dikelola ku jeung pikeun masarakat.',
+    tentang_p3:'Lain saukur simpan pinjam — ieu téh gerakan nuju kamandiriaan ékonomi berbasis nilai-nilai Islam.',
+    akad_ujrah:'Biaya administrasi flat. Lain bunga. Teu ngabeungbeuratan.',
+    akad_mudh:'Bagi hasil usaha. BTN milu nanggung résiko babarengan.',
+    akad_wad:'Titipan murni. Tabungan tetep milik anggota sagemblengna.',
+    akad_aman:'Laporan terbuka. Dikelola babarengan. Transparan pinuh.',
+    struktur_tag:'Struktur Organisasi', struktur_h:'Di Handapeun BTN',
+    org1:'Yayasan BTN', org1s:'Pembina & Pengawas',
+    org2:'Ketua TAMARA', org2s:'Kaputusan Strategis',
+    org3:'Admin Kauangan', org3s:'Kelola Kas & Data',
+    org4:'Pendamping', org4s:'Rekrut & Dampingi',
+    daftar_h1:'Cara Daftar & Syarat', daftar_sub:'Gampang, gancang, jeung transparan',
+    langkah_tag:'Léngkah-léngkah', langkah_h:'Mimiti dina 4 Léngkah',
+    step1_t:'Daftar', step1_d:'Eusi formulir pendaptaran & pasrahkeun fotokopi KTP. Bayar iuran Rp 25.000.',
+    step2_t:'Setor Wadiah', step2_d:'Setor tabungan Wadiah Rp 200.000. Duit ieu tetep boga manéh.',
+    step3_t:'Tunggu ACC', step3_d:'Prosés verifikasi 1 minggu. Admin bakal ngahubungi via WhatsApp.',
+    step4_t:'Dana Cair', step4_d:'Dana ditransfer pinuh ka rekening manéh. Cicilan mimiti minggu saterusna.',
+    syarat_tag:'Syarat', syarat_h:'Syarat Anggota',
+    syarat_umum:'Syarat Umum', syarat_pinjam:'Syarat Pinjaman',
+    s1:'Warga wilayah operasional TAMARA', s2:'KTP nu masih berlaku',
+    s3:'Iuran pendaptaran Rp 25.000', s4:'Satuju nuturkeun SOP TAMARA',
+    s5:'Geus kadaptar jadi anggota', s6:'Setor Wadiah Rp 200.000',
+    s7:'Teu aya tunggakan macet', s8:'Eusi formulir pengajuan pinjaman',
+    ujrah_tag:'Biaya Admin', ujrah_h:'Tabel Ujrah TAMARA',
+    ujrah_note:'Ujrah lain bunga. Ieu biaya administrasi flat nu dibayar sakali di cicilan kahiji.',
+    ujrah_th1:'Gedéna Pinjaman', ujrah_th2:'Ujrah', ujrah_th3:'Pendamping', ujrah_th4:'Kas BTN', ujrah_th5:'Cadangan',
+    cta_h:'Siap Gabung?', cta_p:'Hubungi Pendamping TAMARA di wilayah manéh atawa kunjungi kantor BTN.',
+    cta_btn:'Hubungi Kami',
+    sim_h1:'Simulasi Pinjaman', sim_sub:'Hitung estimasi cicilan saméméh ngajukeun',
+    sim_form_h:'Detail Pinjaman', sim_jenis:'Jenis Pinjaman',
+    sim_opt1:'Pinjaman Reguler (Ujrah)', sim_opt2:'Pinjaman Usaha (Mudharabah)',
+    sim_jumlah:'Jumlah Pinjaman (Rp)', sim_tenor:'Tenor (Minggu)',
+    sim_nisbah:'Nisbah Bagi Hasil pikeun BTN', sim_profit:'Estimasi Profit Usaha/Bulan (Rp)',
+    sim_hitung:'Hitung Simulasi', sim_result_h:'Hasil Simulasi',
+    res_pokok:'Pokok Pinjaman', res_ujrah:'Ujrah (Admin)', res_total:'Total Balikkeun',
+    res_cicilan:'Cicilan Per Minggu', res_bagi:'Bagi Hasil/Bulan pikeun BTN', res_tenor:'Tenor',
+    res_note_label:'Catetan Syariah',
+    res_note_ujrah:'Ujrah dibayar di cicilan kahiji. Dana cair pinuh tanpa potongan di muka.',
+    res_note_mudh:'Bagi hasil dihitung tina profit bersih usaha per bulan. BTN milu nanggung résiko.',
+    login_h:'Admin TAMARA', login_sub:'Lebet pikeun ngatur data anggota jeung pinjaman',
+    login_user:'Username', login_pass:'Sandi', login_btn:'Lebet',
+    ds_anggota:'Total Anggota', ds_aktif:'Pinjaman Aktif', ds_total:'Total Disalurkan', ds_sisa:'Sisa Piutang',
+    dt_anggota:'Anggota', dt_pinjaman:'Pinjaman', dt_tabungan:'Tabungan',
+    tambah_anggota:'+ Tambah Anggota', f_nama:'Ngaran Lengkap', f_alamat:'Alamat / RT-RW',
+    f_hp:'No. HP / WA', f_level:'Level', level_biasa:'Anggota Biasa', level_aktif:'Anggota Aktif', level_mitra:'Anggota Mitra',
+    btn_simpan:'Simpen Anggota', daftar_anggota:'Daptar Anggota',
+    th_no:'No', th_nama:'Ngaran', th_alamat:'Alamat', th_hp:'HP', th_level:'Level', th_aksi:'Aksi',
+    tambah_pinjaman:'+ Tambah Pinjaman', f_peminjam:'Ngaran Peminjam', f_jenis:'Jenis Pinjaman',
+    jenis_ujrah:'Reguler (Ujrah)', jenis_mudh:'Usaha (Mudharabah)',
+    f_jumlah:'Jumlah (Rp)', f_tenor:'Tenor (Minggu)', btn_catat:'Catat Pinjaman',
+    daftar_pinjaman:'Daptar Pinjaman', th_jenis:'Jenis', th_jumlah:'Jumlah',
+    th_ujrah:'Ujrah', th_tenor:'Tenor', th_status:'Status',
+    catat_tabungan:'+ Catat Tabungan', f_penabung:'Ngaran Penabung', f_saldo:'Jumlah Setor (Rp)',
+    f_jenis_tb:'Jenis', tb_wajib:'Wadiah Wajib', tb_sukarela:'Sukarela',
+    f_ket:'Katerangan', btn_catat_tb:'Catat Tabungan',
+    riwayat_tb:'Riwayat Tabungan', th_tgl:'Tanggal', th_ket:'Katerangan',
+    kontak_h1:'Kontak & Lokasi', kontak_sub:'Hubungi kami atawa kunjungi kantor BTN',
+    kontak_info_h:'Informasi Kontak',
+    k_lokasi:'Lokasi', k_wa:'WhatsApp Admin', k_wa_val:'Hubungi Pendamping di wilayah manéh',
+    k_jam:'Jam Operasional', k_jam_val:'Senén – Jumaah, 08.00 – 16.00 WIB',
+    k_org:'Organisasi', kontak_form_h:'Kirim Pesen',
+    k_f_nama:'Ngaran Lengkap', k_f_hp:'No. HP / WA', k_f_pesan:'Pesen',
+    k_btn_kirim:'Kirim via WhatsApp',
+  },
+  en: {
+    nav_beranda:'Home', nav_tentang:'About', nav_daftar:'How to Join',
+    nav_simulasi:'Calculator', nav_kontak:'Contact', nav_admin:'Admin',
+    hero_badge:'Sharia · Trustworthy · Halal',
+    hero_subtitle:'Community Savings & Loans',
+    hero_desc:"A sharia-compliant financial solution for rural communities. Free from loan sharks, halal, transparent, and owned by all of us.",
+    hero_cta1:'Join Now', hero_cta2:'Try Calculator',
+    stat_riba:'Riba Free', stat_ujrah:'Max Fee', stat_plafon:'Initial Limit', stat_akad:'Sharia Contracts',
+    fitur_tag:'Why TAMARA', fitur_title:'Different from Loan Sharks,\nDifferent from Regular Banks',
+    f1_title:'100% Halal', f1_desc:'Ujrah, Mudharabah, and Wadiah contracts. No interest, no riba.',
+    f2_title:'Community-Owned', f2_desc:'Funds are managed transparently by BTN administrators.',
+    f3_title:'Simple Process', f3_desc:'Register, save Rp 200k, wait 1 week. Full disbursement, no upfront deductions.',
+    f4_title:'Self-Payment', f4_desc:'Pay installments via bank transfer, QRIS, or cash. No debt collectors.',
+    f5_title:'Profit Sharing', f5_desc:'Have a business? Apply for Mudharabah financing. Choose your own profit-sharing ratio.',
+    f6_title:'Safe Savings', f6_desc:"Your Wadiah savings fully belong to you. Withdraw anytime.",
+    vs_tag:'Comparison', vs_title:'TAMARA vs Loan Sharks', vs_rentenir:'Loan Shark ⚠️',
+    vs_t1:'Halal contract — no riba', vs_t2:'Flat admin fee, not burdensome',
+    vs_t3:'Full disbursement', vs_t4:'Family-friendly approach', vs_t5:'Savings always belong to member',
+    vs_r1:'Daily interest up to 20-30%', vs_r2:'Compound interest — multiplying riba',
+    vs_r3:'Upfront deductions', vs_r4:'Pressure and threats', vs_r5:'No formal contract',
+    footer_tagline:'Free from Loan Sharks. Halal. Trustworthy. Owned by All of Us.',
+    tentang_h1:'About TAMARA', tentang_sub:'A sharia-based rural economic liberation movement',
+    tentang_visi_h:'Our Vision',
+    tentang_p1:'TAMARA was born from a concern: loan sharks have long gripped village economies with suffocating daily interest rates.',
+    tentang_p2:'Through TAMARA, Bahula Tani Nusantara builds a fair, halal community financial system managed by and for the people.',
+    tentang_p3:'Not just savings and loans — this is a movement toward economic independence based on Islamic values.',
+    akad_ujrah:'Flat admin fee. Not interest. Not burdensome.',
+    akad_mudh:'Profit sharing. BTN shares the business risk.',
+    akad_wad:'Pure deposit. Savings fully belong to the member.',
+    akad_aman:'Open reports. Managed together. Fully transparent.',
+    struktur_tag:'Organizational Structure', struktur_h:'Under BTN Foundation',
+    org1:'BTN Foundation', org1s:'Supervisor & Overseer',
+    org2:'TAMARA Chair', org2s:'Strategic Decisions',
+    org3:'Finance Admin', org3s:'Manage Funds & Data',
+    org4:'Field Companion', org4s:'Recruit & Accompany',
+    daftar_h1:'How to Join & Requirements', daftar_sub:'Easy, fast, and transparent',
+    langkah_tag:'Steps', langkah_h:'Start in 4 Steps',
+    step1_t:'Register', step1_d:'Fill in registration form & submit ID copy. Pay Rp 25,000 membership fee.',
+    step2_t:'Deposit Wadiah', step2_d:'Deposit Rp 200,000 Wadiah savings. This money stays yours, withdrawable anytime.',
+    step3_t:'Wait for Approval', step3_d:'1-week verification process. Admin will contact you via WhatsApp.',
+    step4_t:'Disbursement', step4_d:'Funds transferred in full to your account. Installments begin the following week.',
+    syarat_tag:'Requirements', syarat_h:'Membership Requirements',
+    syarat_umum:'General Requirements', syarat_pinjam:'Loan Requirements',
+    s1:'Resident of TAMARA operational area', s2:'Valid national ID card',
+    s3:'Membership fee Rp 25,000', s4:'Willing to follow TAMARA SOP',
+    s5:'Already registered as member', s6:'Deposit Wadiah Rp 200,000',
+    s7:'No outstanding defaults', s8:'Complete loan application form',
+    ujrah_tag:'Admin Fee', ujrah_h:'TAMARA Ujrah Table',
+    ujrah_note:'Ujrah is not interest. It is a flat administrative fee paid once in the first installment.',
+    ujrah_th1:'Loan Amount', ujrah_th2:'Ujrah', ujrah_th3:'Companion', ujrah_th4:'BTN Fund', ujrah_th5:'Reserve',
+    cta_h:'Ready to Join?', cta_p:'Contact your TAMARA Field Companion or visit the BTN office.',
+    cta_btn:'Contact Us',
+    sim_h1:'Loan Calculator', sim_sub:'Estimate your installments before applying',
+    sim_form_h:'Loan Details', sim_jenis:'Loan Type',
+    sim_opt1:'Regular Loan (Ujrah)', sim_opt2:'Business Loan (Mudharabah)',
+    sim_jumlah:'Loan Amount (Rp)', sim_tenor:'Tenor (Weeks)',
+    sim_nisbah:'Profit Sharing for BTN', sim_profit:'Estimated Business Profit/Month (Rp)',
+    sim_hitung:'Calculate', sim_result_h:'Simulation Result',
+    res_pokok:'Principal', res_ujrah:'Ujrah (Admin Fee)', res_total:'Total to Repay',
+    res_cicilan:'Weekly Installment', res_bagi:'Monthly Profit Share to BTN', res_tenor:'Tenor',
+    res_note_label:'Sharia Note',
+    res_note_ujrah:'Ujrah paid in first installment. Full disbursement with no upfront deductions.',
+    res_note_mudh:'Profit share calculated from net business profit per month. BTN shares the risk.',
+    login_h:'TAMARA Admin', login_sub:'Login to manage member and loan data',
+    login_user:'Username', login_pass:'Password', login_btn:'Login',
+    ds_anggota:'Total Members', ds_aktif:'Active Loans', ds_total:'Total Disbursed', ds_sisa:'Remaining Receivables',
+    dt_anggota:'Members', dt_pinjaman:'Loans', dt_tabungan:'Savings',
+    tambah_anggota:'+ Add Member', f_nama:'Full Name', f_alamat:'Address / RT-RW',
+    f_hp:'Phone / WA', f_level:'Level', level_biasa:'Regular Member', level_aktif:'Active Member', level_mitra:'Partner Member',
+    btn_simpan:'Save Member', daftar_anggota:'Member List',
+    th_no:'No', th_nama:'Name', th_alamat:'Address', th_hp:'Phone', th_level:'Level', th_aksi:'Action',
+    tambah_pinjaman:'+ Add Loan', f_peminjam:'Borrower Name', f_jenis:'Loan Type',
+    jenis_ujrah:'Regular (Ujrah)', jenis_mudh:'Business (Mudharabah)',
+    f_jumlah:'Amount (Rp)', f_tenor:'Tenor (Weeks)', btn_catat:'Record Loan',
+    daftar_pinjaman:'Loan List', th_jenis:'Type', th_jumlah:'Amount',
+    th_ujrah:'Ujrah', th_tenor:'Tenor', th_status:'Status',
+    catat_tabungan:'+ Record Savings', f_penabung:'Saver Name', f_saldo:'Deposit Amount (Rp)',
+    f_jenis_tb:'Type', tb_wajib:'Mandatory Wadiah', tb_sukarela:'Voluntary',
+    f_ket:'Notes', btn_catat_tb:'Record Savings',
+    riwayat_tb:'Savings History', th_tgl:'Date', th_ket:'Notes',
+    kontak_h1:'Contact & Location', kontak_sub:'Contact us or visit the BTN office',
+    kontak_info_h:'Contact Information',
+    k_lokasi:'Location', k_wa:'Admin WhatsApp', k_wa_val:'Contact your area Field Companion',
+    k_jam:'Office Hours', k_jam_val:'Monday – Friday, 08:00 – 16:00 WIB',
+    k_org:'Organization', kontak_form_h:'Send Message',
+    k_f_nama:'Full Name', k_f_hp:'Phone / WA', k_f_pesan:'Message',
+    k_btn_kirim:'Send via WhatsApp',
+  }
+};
+
+// ===== NAVIGATION =====
+function showPage(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-link').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  const activeBtn = document.querySelector(`[data-page="${page}"]`);
+  if (activeBtn) activeBtn.classList.add('active');
+  window.scrollTo(0, 0);
+  if (page === 'admin') renderDash();
+}
+
+// ===== LANGUAGE =====
+function setLang(lang) {
+  currentLang = lang;
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector(`.lang-btn[onclick="setLang('${lang}')"]`).classList.add('active');
+  applyLang();
+}
+
+function applyLang() {
+  const t = i18n[currentLang];
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (t[key] !== undefined) el.textContent = t[key];
+  });
+}
+
+// ===== SIMULASI =====
+function getUjrah(jml) {
+  if (jml <= 500000) return 25000;
+  if (jml <= 1000000) return 50000;
+  return 80000;
+}
+
+function fmtRp(n) { return Math.round(n).toLocaleString('id-ID'); }
+
+function updateSim() {
+  const jenis = document.getElementById('sim-jenis').value;
+  const jml = parseFloat(document.getElementById('sim-jumlah').value) || 0;
+  const tenor = parseInt(document.getElementById('sim-tenor').value) || 1;
+  const mudhSec = document.getElementById('mudh-section');
+  const bajiBagiWrap = document.getElementById('res-bagi-wrap');
+  const resNote = document.getElementById('res-note');
+  const t = i18n[currentLang];
+
+  if (jenis === 'mudh') {
+    mudhSec.style.display = 'block';
+    bajiBagiWrap.style.display = 'flex';
+    const nisbah = parseInt(document.getElementById('sim-nisbah').value) || 30;
+    const profit = parseFloat(document.getElementById('sim-profit').value) || 0;
+    const bagiHasil = profit * nisbah / 100;
+    document.getElementById('res-pokok').textContent = 'Rp ' + fmtRp(jml);
+    document.getElementById('res-ujrah').textContent = 'Rp 0 (Akad Mudharabah)';
+    document.getElementById('res-total').textContent = 'Rp ' + fmtRp(jml) + ' + bagi hasil';
+    document.getElementById('res-cicilan').textContent = 'Rp ' + fmtRp(jml / tenor) + '/minggu';
+    document.getElementById('res-bagi').textContent = 'Rp ' + fmtRp(bagiHasil) + '/bulan';
+    document.getElementById('res-tenor').textContent = tenor + ' Minggu';
+    resNote.textContent = t['res_note_mudh'] || 'Bagi hasil dihitung dari profit bersih usaha per bulan. BTN ikut menanggung risiko.';
+  } else {
+    mudhSec.style.display = 'none';
+    bajiBagiWrap.style.display = 'none';
+    const ujrah = getUjrah(jml);
+    const total = jml + ujrah;
+    const cicilan = Math.ceil(total / tenor);
+    document.getElementById('res-pokok').textContent = 'Rp ' + fmtRp(jml);
+    document.getElementById('res-ujrah').textContent = 'Rp ' + fmtRp(ujrah);
+    document.getElementById('res-total').textContent = 'Rp ' + fmtRp(total);
+    document.getElementById('res-cicilan').textContent = 'Rp ' + fmtRp(cicilan) + '/minggu';
+    document.getElementById('res-tenor').textContent = tenor + ' Minggu';
+    resNote.textContent = t['res_note_ujrah'] || 'Ujrah dibayar di cicilan pertama. Dana cair penuh tanpa potongan di muka.';
+  }
+}
+
+// ===== ADMIN =====
+function doLogin() {
+  const user = document.getElementById('login-user').value;
+  const pass = document.getElementById('login-pass').value;
+  if (user === 'admin' && pass === 'tamara2026') {
+    document.getElementById('admin-login').style.display = 'none';
+    document.getElementById('admin-dash').classList.add('active');
+    renderDash();
+    showToast('✅ Selamat datang, Admin!');
+  } else {
+    showToast('⚠️ Username atau password salah!');
+  }
+}
+function doLogout() {
+  document.getElementById('admin-login').style.display = 'block';
+  document.getElementById('admin-dash').classList.remove('active');
+  document.getElementById('login-user').value = '';
+  document.getElementById('login-pass').value = '';
+}
+
+function saveData() {
+  localStorage.setItem('tamara-anggota', JSON.stringify(anggota));
+  localStorage.setItem('tamara-pinjaman', JSON.stringify(pinjaman));
+  localStorage.setItem('tamara-tabungan', JSON.stringify(tabungan));
+}
+
+function renderDash() {
+  const totalDisalurkan = pinjaman.reduce((a,p) => a + p.jumlah, 0);
+  const totalSisa = pinjaman.filter(p => p.status === 'aktif').reduce((a,p) => a + (p.jumlah + getUjrah(p.jumlah)), 0);
+  document.getElementById('ds-anggota').textContent = anggota.length;
+  document.getElementById('ds-aktif').textContent = pinjaman.filter(p => p.status === 'aktif').length;
+  document.getElementById('ds-total').textContent = 'Rp ' + fmtRp(totalDisalurkan);
+  document.getElementById('ds-sisa').textContent = 'Rp ' + fmtRp(totalSisa);
+  renderAnggota(); renderPinjaman(); renderTabungan();
+}
+
+function tambahAnggota() {
+  const nama = document.getElementById('a-nama').value.trim();
+  const alamat = document.getElementById('a-alamat').value.trim();
+  const hp = document.getElementById('a-hp').value.trim();
+  const level = document.getElementById('a-level').value;
+  if (!nama) { showToast('⚠️ Nama wajib diisi!'); return; }
+  anggota.push({ id: Date.now(), nama, alamat, hp, level, tgl: new Date().toLocaleDateString('id-ID') });
+  saveData(); renderDash();
+  document.getElementById('a-nama').value = '';
+  document.getElementById('a-alamat').value = '';
+  document.getElementById('a-hp').value = '';
+  showToast('✅ Anggota ' + nama + ' ditambahkan!');
+}
+
+function renderAnggota() {
+  const tbl = document.getElementById('tbl-anggota');
+  const rows = anggota.map((a, i) => `
+    <tr>
+      <td>${i+1}</td>
+      <td><b>${a.nama}</b></td>
+      <td>${a.alamat || '—'}</td>
+      <td>${a.hp || '—'}</td>
+      <td><span class="status-badge status-aktif">${a.level}</span></td>
+      <td><button class="btn-hijau btn-sm btn-merah" onclick="hapusAnggota(${a.id})">Hapus</button></td>
+    </tr>`).join('');
+  tbl.innerHTML = `<tr><th>No</th><th>Nama</th><th>Alamat</th><th>HP</th><th>Level</th><th>Aksi</th></tr>` + (rows || `<tr><td colspan="6" style="text-align:center;color:var(--abu);padding:24px">Belum ada anggota</td></tr>`);
+}
+
+function hapusAnggota(id) {
+  if (!confirm('Hapus anggota ini?')) return;
+  anggota = anggota.filter(a => a.id !== id);
+  saveData(); renderDash();
+  showToast('🗑 Anggota dihapus');
+}
+
+function tambahPinjaman() {
+  const nama = document.getElementById('p-nama').value.trim();
+  const jenis = document.getElementById('p-jenis').value;
+  const jumlah = parseFloat(document.getElementById('p-jumlah').value);
+  const tenor = parseInt(document.getElementById('p-tenor').value);
+  if (!nama || !jumlah || !tenor) { showToast('⚠️ Lengkapi data pinjaman!'); return; }
+  pinjaman.push({ id: Date.now(), nama, jenis, jumlah, tenor, ujrah: getUjrah(jumlah), status: 'aktif', tgl: new Date().toLocaleDateString('id-ID') });
+  saveData(); renderDash();
+  document.getElementById('p-nama').value = '';
+  document.getElementById('p-jumlah').value = '';
+  document.getElementById('p-tenor').value = '';
+  showToast('✅ Pinjaman ' + nama + ' dicatat!');
+}
+
+function renderPinjaman() {
+  const tbl = document.getElementById('tbl-pinjaman');
+  const rows = pinjaman.map((p, i) => `
+    <tr>
+      <td>${i+1}</td>
+      <td><b>${p.nama}</b></td>
+      <td>${p.jenis === 'ujrah' ? 'Reguler' : 'Mudharabah'}</td>
+      <td>Rp ${fmtRp(p.jumlah)}</td>
+      <td>Rp ${fmtRp(p.ujrah)}</td>
+      <td>${p.tenor} minggu</td>
+      <td><span class="status-badge status-${p.status}">${p.status}</span></td>
+      <td>
+        <button class="btn-hijau btn-sm" onclick="ubahStatus(${p.id},'lunas')" style="margin-right:4px">Lunas</button>
+        <button class="btn-hijau btn-sm btn-merah" onclick="ubahStatus(${p.id},'macet')">Macet</button>
+      </td>
+    </tr>`).join('');
+  tbl.innerHTML = `<tr><th>No</th><th>Nama</th><th>Jenis</th><th>Jumlah</th><th>Ujrah</th><th>Tenor</th><th>Status</th><th>Aksi</th></tr>` + (rows || `<tr><td colspan="8" style="text-align:center;color:var(--abu);padding:24px">Belum ada pinjaman</td></tr>`);
+}
+
+function ubahStatus(id, status) {
+  const idx = pinjaman.findIndex(p => p.id === id);
+  pinjaman[idx].status = status;
+  saveData(); renderDash();
+  showToast(`✅ Status diubah ke ${status}`);
+}
+
+function tambahTabungan() {
+  const nama = document.getElementById('t-nama').value.trim();
+  const jumlah = parseFloat(document.getElementById('t-jumlah').value);
+  const jenis = document.getElementById('t-jenis').value;
+  const ket = document.getElementById('t-ket').value.trim();
+  if (!nama || !jumlah) { showToast('⚠️ Lengkapi data tabungan!'); return; }
+  tabungan.push({ id: Date.now(), nama, jumlah, jenis, ket, tgl: new Date().toLocaleDateString('id-ID') });
+  saveData(); renderTabungan();
+  document.getElementById('t-nama').value = '';
+  document.getElementById('t-jumlah').value = '';
+  document.getElementById('t-ket').value = '';
+  showToast('✅ Tabungan ' + nama + ' dicatat!');
+}
+
+function renderTabungan() {
+  const tbl = document.getElementById('tbl-tabungan');
+  const rows = tabungan.slice().reverse().map(t => `
+    <tr>
+      <td>${t.tgl}</td>
+      <td><b>${t.nama}</b></td>
+      <td>${t.jenis}</td>
+      <td>Rp ${fmtRp(t.jumlah)}</td>
+      <td>${t.ket || '—'}</td>
+    </tr>`).join('');
+  tbl.innerHTML = `<tr><th>Tanggal</th><th>Nama</th><th>Jenis</th><th>Jumlah</th><th>Keterangan</th></tr>` + (rows || `<tr><td colspan="5" style="text-align:center;color:var(--abu);padding:24px">Belum ada tabungan</td></tr>`);
+}
+
+function showDashTab(tab) {
+  document.querySelectorAll('.dash-tab').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.dash-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('panel-' + tab).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// ===== KONTAK =====
+function kirimPesan() {
+  const nama = document.getElementById('k-nama').value.trim();
+  const hp = document.getElementById('k-hp').value.trim();
+  const pesan = document.getElementById('k-pesan').value.trim();
+  if (!nama || !pesan) { showToast('⚠️ Isi nama dan pesan!'); return; }
+  const teks = `Halo Admin TAMARA BTN!%0A%0ANama: ${nama}%0AHP/WA: ${hp}%0APesan: ${pesan}%0A%0ATerima kasih 🌾`;
+  window.open(`https://wa.me/6283971666136?text=${teks}`, '_blank');
+}
+
+function daftarOnline() {
+  const nama = document.getElementById('reg-nama').value.trim();
+  const hp = document.getElementById('reg-hp').value.trim();
+  const alamat = document.getElementById('reg-alamat').value.trim();
+  const kerja = document.getElementById('reg-kerja').value.trim();
+  const tujuan = document.getElementById('reg-tujuan').value;
+  const plafon = document.getElementById('reg-plafon').value;
+  if (!nama || !hp || !alamat || !tujuan) {
+    showToast('⚠️ Lengkapi data pendaftaran!'); return;
+  }
+  const teks =
+    `🌾 *PENDAFTARAN ANGGOTA TAMARA*%0A%0A` +
+    `Nama        : ${nama}%0A` +
+    `HP/WA       : ${hp}%0A` +
+    `Alamat      : ${alamat}%0A` +
+    `Pekerjaan   : ${kerja || '-'}%0A` +
+    `Tujuan      : ${tujuan}%0A` +
+    `Plafon      : ${plafon}%0A%0A` +
+    `Saya menyatakan data di atas benar dan bersedia mengikuti SOP TAMARA.%0A%0A` +
+    `Mohon diproses. Terima kasih 🌾`;
+  window.open(`https://wa.me/6283971666136?text=${teks}`, '_blank');
+  showToast('✅ Membuka WhatsApp Admin TAMARA...');
+}
+
+// ===== TOAST =====
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+// ===== INIT =====
+updateSim();
+applyLang();
+
+// ===== ANGGOTA =====
+let daftarAnggotaData = JSON.parse(localStorage.getItem('tamara-members') || '[]');
+
+function daftarAnggota() {
+  const nama = document.getElementById('reg-nama2').value.trim();
+  const hp = document.getElementById('reg-hp2').value.trim();
+  const alamat = document.getElementById('reg-alamat2').value.trim();
+  const kerja = document.getElementById('reg-kerja2').value.trim();
+  const tujuan = document.getElementById('reg-tujuan2').value;
+  const rek = document.getElementById('reg-rek2').value.trim();
+  if (!nama || !hp || !alamat || !tujuan) { showToast('⚠️ Lengkapi data pendaftaran!'); return; }
+  const teks = encodeURIComponent(
+    `🌾 *PENDAFTARAN ANGGOTA TAMARA*\n\n` +
+    `Nama        : ${nama}\n` +
+    `HP/WA       : ${hp}\n` +
+    `Alamat      : ${alamat}\n` +
+    `Pekerjaan   : ${kerja || '-'}\n` +
+    `Tujuan      : ${tujuan}\n` +
+    `No. Rek     : ${rek || '-'}\n\n` +
+    `Saya menyatakan data di atas benar dan bersedia mengikuti SOP TAMARA.\n\n` +
+    `Mohon diproses. Terima kasih 🌾`
+  );
+  window.open(`https://wa.me/6283971666136?text=${teks}`, '_blank');
+  // Simpan lokal untuk tampilan publik
+  daftarAnggotaData.push({ nama, alamat, tujuan, tgl: new Date().toLocaleDateString('id-ID') });
+  localStorage.setItem('tamara-members', JSON.stringify(daftarAnggotaData));
+  renderPublicAnggota();
+  showToast('✅ Membuka WhatsApp Admin...');
+}
+
+function renderPublicAnggota() {
+  const list = document.getElementById('public-anggota-list');
+  if (!list) return;
+  const stat_a = document.getElementById('stat-anggota');
+  const stat_ak = document.getElementById('stat-aktif-a');
+  const stat_m = document.getElementById('stat-mitra');
+  if (stat_a) stat_a.textContent = daftarAnggotaData.length;
+  if (stat_ak) stat_ak.textContent = daftarAnggotaData.length;
+  if (stat_m) stat_m.textContent = Math.floor(daftarAnggotaData.length / 5);
+  if (daftarAnggotaData.length === 0) {
+    list.innerHTML = `<div style="text-align:center;padding:40px;color:var(--abu);grid-column:1/-1"><div style="font-size:48px;margin-bottom:12px">👥</div><div>Jadilah yang pertama bergabung!</div></div>`;
+    return;
+  }
+  list.innerHTML = daftarAnggotaData.map(a =>
+    `<div style="background:var(--putih);border-radius:12px;padding:16px;border:1px solid var(--krem-gelap);text-align:center">
+      <div style="width:48px;height:48px;background:var(--hijau-tua);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:20px;font-weight:900;color:var(--emas-muda);margin:0 auto 10px">${a.nama.charAt(0)}</div>
+      <div style="font-weight:700;font-size:14px;color:var(--hijau-tua)">${a.nama}</div>
+      <div style="font-size:11px;color:var(--abu);margin-top:2px">${a.alamat}</div>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--abu);margin-top:6px">${a.tgl}</div>
+    </div>`
+  ).join('');
+}
+
+// ===== NABUNG =====
+function konfirmasiSetor() {
+  const nama = document.getElementById('nb-nama').value.trim();
+  const hp = document.getElementById('nb-hp').value.trim();
+  const jumlah = document.getElementById('nb-jumlah').value;
+  const bank = document.getElementById('nb-bank').value;
+  if (!nama || !jumlah) { showToast('⚠️ Lengkapi data setor!'); return; }
+  const teks = encodeURIComponent(
+    `💜 *KONFIRMASI SETOR WADIAH TAMARA*\n\n` +
+    `Nama    : ${nama}\n` +
+    `HP/WA   : ${hp}\n` +
+    `Jumlah  : Rp ${parseInt(jumlah).toLocaleString('id-ID')}\n` +
+    `Bank    : ${bank}\n\n` +
+    `_(Bukti transfer akan dikirim terpisah)_\n\n` +
+    `Mohon dikonfirmasi. Terima kasih 🌾`
+  );
+  window.open(`https://wa.me/6283971666136?text=${teks}`, '_blank');
+  showToast('✅ Membuka WhatsApp Admin...');
+}
+
+function mintaTarik() {
+  const nama = document.getElementById('tw-nama').value.trim();
+  const hp = document.getElementById('tw-hp').value.trim();
+  const jumlah = document.getElementById('tw-jumlah').value;
+  const rek = document.getElementById('tw-rek').value.trim();
+  const ket = document.getElementById('tw-ket').value.trim();
+  if (!nama || !jumlah || !rek) { showToast('⚠️ Lengkapi data penarikan!'); return; }
+  const teks = encodeURIComponent(
+    `💜 *PERMINTAAN TARIK WADIAH TAMARA*\n\n` +
+    `Nama    : ${nama}\n` +
+    `HP/WA   : ${hp}\n` +
+    `Jumlah  : Rp ${parseInt(jumlah).toLocaleString('id-ID')}\n` +
+    `Rek     : ${rek}\n` +
+    `Ket     : ${ket || '-'}\n\n` +
+    `Mohon diproses. Terima kasih 🌾`
+  );
+  window.open(`https://wa.me/6283971666136?text=${teks}`, '_blank');
+  showToast('✅ Permintaan tarik dikirim...');
+}
+
+// ===== DONASI =====
+function setDonasi(nominal) {
+  document.getElementById('don-jumlah').value = nominal;
+  document.querySelectorAll('.donasi-quick').forEach(b => {
+    b.style.background = 'var(--krem)';
+    b.style.borderColor = 'var(--krem-gelap)';
+    b.style.color = 'var(--hitam)';
+  });
+  event.target.style.background = 'var(--hijau-tua)';
+  event.target.style.borderColor = 'var(--hijau-tua)';
+  event.target.style.color = 'var(--emas-muda)';
+}
+
+function kirimDonasi() {
+  const nama = document.getElementById('don-nama').value.trim() || 'Hamba Allah';
+  const hp = document.getElementById('don-hp').value.trim();
+  const jumlah = document.getElementById('don-jumlah').value;
+  const program = document.getElementById('don-program').value;
+  const pesan = document.getElementById('don-pesan').value.trim();
+  if (!jumlah) { showToast('⚠️ Masukkan nominal donasi!'); return; }
+  const teks = encodeURIComponent(
+    `❤️ *KONFIRMASI DONASI TAMARA*\n\n` +
+    `Donatur : ${nama}\n` +
+    `HP/WA   : ${hp || '-'}\n` +
+    `Nominal : Rp ${parseInt(jumlah).toLocaleString('id-ID')}\n` +
+    `Program : ${program}\n` +
+    `Pesan   : ${pesan || '-'}\n\n` +
+    `_(Bukti transfer akan dikirim terpisah)_\n\n` +
+    `Semoga berkah. Terima kasih 🌾`
+  );
+  window.open(`https://wa.me/6283971666136?text=${teks}`, '_blank');
+  showToast('❤️ Jazakallah khairan!');
+}
+
+// ===== INVESTASI =====
+function investNow(program, modal, pengelola) {
+  document.getElementById('inv-program').value = `${program} — ${pengelola}`;
+  document.getElementById('invest-form-title').textContent = `💰 Form Investasi — ${program}`;
+  document.getElementById('inv-nama').focus();
+  document.querySelector('#page-investasi .section').scrollIntoView({ behavior: 'smooth' });
+  // Scroll ke form
+  setTimeout(() => {
+    document.getElementById('inv-nama').closest('.section').querySelector('[id="inv-nama"]')
+      .closest('div[style*="grid"]').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, 300);
+  showToast(`✅ Program ${program} dipilih`);
+}
+
+function updateInvTotal() {
+  const unit = parseInt(document.getElementById('inv-unit').value);
+  const total = unit * 5000000;
+  document.getElementById('inv-total-modal').textContent = 'Rp ' + total.toLocaleString('id-ID');
+  document.getElementById('inv-est-profit').textContent = '30% dari profit usaha';
+}
+
+function kirimInvestasi() {
+  const nama = document.getElementById('inv-nama').value.trim();
+  const hp = document.getElementById('inv-hp').value.trim();
+  const program = document.getElementById('inv-program').value;
+  const unit = document.getElementById('inv-unit').value;
+  const total = (parseInt(unit) * 5000000).toLocaleString('id-ID');
+  const rek = document.getElementById('inv-rek').value.trim();
+  const catatan = document.getElementById('inv-catatan').value.trim();
+  if (!nama || !hp) { showToast('⚠️ Lengkapi data investasi!'); return; }
+  const teks = encodeURIComponent(
+    `💰 *PENDAFTARAN INVESTASI TAMARA*\n\n` +
+    `Nama     : ${nama}\n` +
+    `HP/WA    : ${hp}\n` +
+    `Program  : ${program}\n` +
+    `Unit     : ${unit} unit\n` +
+    `Total    : Rp ${total}\n` +
+    `Rek Profit: ${rek || '-'}\n` +
+    `Catatan  : ${catatan || '-'}\n\n` +
+    `_(Bukti transfer akan dikirim terpisah)_\n\n` +
+    `Mohon diproses akad Mudharabah. Terima kasih 🌾`
+  );
+  window.open(`https://wa.me/6283971666136?text=${teks}`, '_blank');
+  showToast('✅ Mendaftar investasi...');
+}
+
+// ===== LOGIN INVESTOR =====
+let investorData = JSON.parse(localStorage.getItem('tamara-investors') || '[]');
+
+function loginInvestor() {
+  const kode = document.getElementById('inv-kode').value.trim().toUpperCase();
+  const hp = document.getElementById('inv-login-hp').value.trim();
+  if (!kode || !hp) { showToast('⚠️ Masukkan kode dan HP!'); return; }
+  const investor = investorData.find(i => i.kode === kode && i.hp === hp);
+  if (investor) {
+    document.getElementById('investor-login-area').style.display = 'none';
+    document.getElementById('investor-dashboard').style.display = 'block';
+    document.getElementById('inv-dash-nama').textContent = investor.nama;
+    document.getElementById('inv-dash-kode').textContent = 'Kode: ' + investor.kode;
+    document.getElementById('inv-dash-modal').textContent = 'Rp ' + (investor.modal||5000000).toLocaleString('id-ID');
+    document.getElementById('inv-dash-program').textContent = investor.program || '—';
+    showToast('✅ Selamat datang, ' + investor.nama + '!');
+  } else {
+    // Demo: admin bisa tambah investor via console
+    showToast('⚠️ Kode tidak ditemukan. Hubungi Admin.');
+    const waMsg = encodeURIComponent(`Halo Admin TAMARA! Saya investor dengan kode ${kode}, mohon bantuan login. HP: ${hp}`);
+    setTimeout(() => { if (confirm('Hubungi Admin untuk aktivasi akun investor?')) window.open(`https://wa.me/6283971666136?text=${waMsg}`, '_blank'); }, 1000);
+  }
+}
+
+function logoutInvestor() {
+  document.getElementById('investor-login-area').style.display = 'block';
+  document.getElementById('investor-dashboard').style.display = 'none';
+  document.getElementById('inv-kode').value = '';
+  document.getElementById('inv-login-hp').value = '';
+}
+
+function tanyaAdmin() {
+  const nama = document.getElementById('inv-dash-nama').textContent;
+  const kode = document.getElementById('inv-dash-kode').textContent;
+  const teks = encodeURIComponent(`Halo Admin TAMARA! Saya ${nama} (${kode}) ingin menanyakan update laporan profit investasi saya. Terima kasih 🌾`);
+  window.open(`https://wa.me/6283971666136?text=${teks}`, '_blank');
+}
+
+// ===== INIT BARU =====
+renderPublicAnggota();
+</script>
+</body>
+</html>
