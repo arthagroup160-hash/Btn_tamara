@@ -1,0 +1,1474 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TAMARA — Manajemen Keuangan Syariah</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=IBM+Plex+Mono:wght@400;600&family=Noto+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --hijau: #1a6b3c;
+    --hijau-muda: #2d9b5a;
+    --hijau-gelap: #0d3d21;
+    --emas: #c9a227;
+    --emas-muda: #f0cc6a;
+    --krem: #f7f3e8;
+    --krem-gelap: #ede5cc;
+    --putih: #ffffff;
+    --hitam: #1a1a1a;
+    --abu: #6b7280;
+    --merah: #c0392b;
+    --merah-muda: #f8d7da;
+    --biru: #1e3a5f;
+    --ungu: #6d3b8e;
+    --teal: #0d7377;
+    --teal-muda: #14a085;
+    --teal-muda2: #e0f5f2;
+    --oranye: #b94f00;
+    --oranye-muda: #e8681a;
+    --oranye-bg: #fff3ea;
+    --coklat: #7c4a00;
+    --coklat-muda: #b8860b;
+    --coklat-bg: #fdf5e4;
+    --bg: #f4f0e4;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Noto Sans',sans-serif; background:var(--bg); color:var(--hitam); min-height:100vh; }
+
+  /* HEADER */
+  .header { background:var(--hijau-gelap); padding:16px 20px; position:sticky; top:0; z-index:100; box-shadow:0 2px 12px rgba(0,0,0,0.3); }
+  .header-inner { display:flex; align-items:center; justify-content:space-between; max-width:480px; margin:0 auto; }
+  .header-logo { font-family:'Playfair Display',serif; font-size:20px; color:var(--emas-muda); font-weight:900; letter-spacing:1px; }
+  .header-sub { font-family:'IBM Plex Mono',monospace; font-size:10px; color:rgba(255,255,255,0.5); letter-spacing:1px; text-transform:uppercase; margin-top:2px; }
+  .header-badge { background:var(--emas); color:var(--hijau-gelap); font-family:'IBM Plex Mono',monospace; font-size:10px; font-weight:600; padding:4px 10px; border-radius:20px; }
+
+  /* SUMMARY */
+  .summary-wrap { max-width:480px; margin:0 auto; padding:16px 16px 0; display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; }
+  .sum-card { background:var(--putih); border-radius:12px; padding:14px 16px; border-left:4px solid var(--hijau-muda); box-shadow:0 2px 8px rgba(0,0,0,0.06); }
+  .sum-card.merah { border-left-color:var(--merah); }
+  .sum-card.emas { border-left-color:var(--emas); }
+  .sum-card.biru { border-left-color:var(--biru); }
+  .sum-card.ungu { border-left-color:var(--ungu); }
+  .sum-card.teal { border-left-color:var(--teal); }
+  .sum-card.oranye { border-left-color:var(--oranye-muda); }
+  .sum-card.coklat { border-left-color:var(--coklat-muda); }
+  .sum-label { font-size:10px; color:var(--abu); text-transform:uppercase; letter-spacing:0.8px; font-family:'IBM Plex Mono',monospace; margin-bottom:6px; }
+  .sum-value { font-family:'IBM Plex Mono',monospace; font-size:13px; font-weight:600; color:var(--hijau-gelap); }
+  .sum-value.merah { color:var(--merah); }
+  .sum-value.ungu { color:var(--ungu); }
+  .sum-value.teal { color:var(--teal); }
+  .sum-value.oranye { color:var(--oranye-muda); }
+  .sum-value.coklat { color:var(--coklat-muda); }
+
+  /* TABS */
+  .nav-tabs { max-width:480px; margin:14px auto 0; padding:0 16px; display:flex; gap:6px; overflow-x:auto; padding-bottom:2px; }
+  .nav-tabs::-webkit-scrollbar { display:none; }
+  .tab-btn { flex-shrink:0; padding:9px 12px; border:none; border-radius:10px; font-family:'Noto Sans',sans-serif; font-size:11px; font-weight:700; cursor:pointer; background:var(--putih); color:var(--abu); transition:all 0.2s; white-space:nowrap; }
+  .tab-btn.active { background:var(--hijau-gelap); color:var(--emas-muda); }
+
+  /* CONTENT */
+  .content { max-width:480px; margin:12px auto; padding:0 16px 100px; }
+  .section { display:none; }
+  .section.active { display:block; animation:fadeIn 0.3s ease; }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+
+  /* FORM */
+  .form-card { background:var(--putih); border-radius:16px; padding:20px; box-shadow:0 2px 12px rgba(0,0,0,0.07); margin-bottom:16px; }
+  .form-title { font-family:'Playfair Display',serif; font-size:16px; color:var(--hijau-gelap); font-weight:700; margin-bottom:16px; padding-bottom:10px; border-bottom:2px solid var(--krem-gelap); }
+  .form-group { margin-bottom:12px; }
+  .form-label { display:block; font-size:11px; font-weight:700; color:var(--abu); text-transform:uppercase; letter-spacing:0.6px; margin-bottom:5px; font-family:'IBM Plex Mono',monospace; }
+  .form-input { width:100%; padding:10px 12px; border:2px solid var(--krem-gelap); border-radius:8px; font-family:'Noto Sans',sans-serif; font-size:14px; background:var(--krem); color:var(--hitam); outline:none; transition:border-color 0.2s; }
+  .form-input:focus { border-color:var(--hijau-muda); background:var(--putih); }
+  .form-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  select.form-input { appearance:none; cursor:pointer; }
+
+  /* UJRAH BADGE */
+  .ujrah-preview { background:linear-gradient(135deg,var(--hijau-gelap),var(--hijau)); border-radius:12px; padding:14px 16px; margin-bottom:14px; display:none; }
+  .ujrah-preview-title { font-family:'IBM Plex Mono',monospace; font-size:10px; color:rgba(255,255,255,0.5); text-transform:uppercase; letter-spacing:1px; margin-bottom:8px; }
+  .ujrah-preview-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; }
+  .ujrah-item-label { font-size:10px; color:rgba(255,255,255,0.5); font-family:'IBM Plex Mono',monospace; }
+  .ujrah-item-val { font-family:'IBM Plex Mono',monospace; font-size:14px; font-weight:600; color:var(--emas-muda); margin-top:2px; }
+
+  /* BUTTONS */
+  .btn { width:100%; padding:12px; border:none; border-radius:10px; font-family:'Noto Sans',sans-serif; font-size:14px; font-weight:700; cursor:pointer; transition:all 0.2s; }
+  .btn-hijau { background:var(--hijau); color:var(--putih); }
+  .btn-hijau:active { background:var(--hijau-gelap); transform:scale(0.98); }
+  .btn-emas { background:var(--emas); color:var(--hijau-gelap); }
+  .btn-abu { background:var(--krem-gelap); color:var(--hitam); }
+  .btn-merah { background:var(--merah); color:white; }
+  .btn-teal { background:var(--teal); color:white; }
+  .btn-teal:active { background:#0a5a5d; transform:scale(0.98); }
+  .btn-oranye { background:var(--oranye-muda); color:white; }
+  .btn-oranye:active { background:var(--oranye); transform:scale(0.98); }
+  .btn-coklat { background:var(--coklat-muda); color:white; }
+  .btn-coklat:active { background:var(--coklat); transform:scale(0.98); }
+  .btn-kecil { width:auto; padding:6px 12px; font-size:11px; border-radius:8px; }
+
+  /* SEARCH & FILTER */
+  .search-wrap { position:relative; margin-bottom:12px; }
+  .search-input { width:100%; padding:10px 12px 10px 36px; border:2px solid var(--krem-gelap); border-radius:10px; font-size:14px; background:var(--putih); font-family:'Noto Sans',sans-serif; outline:none; }
+  .search-input:focus { border-color:var(--hijau-muda); }
+  .search-icon { position:absolute; left:10px; top:50%; transform:translateY(-50%); color:var(--abu); font-size:16px; }
+  .filter-wrap { display:flex; gap:8px; margin-bottom:14px; overflow-x:auto; padding-bottom:4px; }
+  .filter-wrap::-webkit-scrollbar { display:none; }
+  .filter-btn { white-space:nowrap; padding:6px 14px; border:2px solid var(--krem-gelap); border-radius:20px; background:var(--putih); font-size:12px; font-weight:600; cursor:pointer; font-family:'Noto Sans',sans-serif; color:var(--abu); transition:all 0.2s; }
+  .filter-btn.active { background:var(--hijau-gelap); color:var(--emas-muda); border-color:var(--hijau-gelap); }
+  .filter-btn.active-oranye { background:var(--oranye-muda); color:white; border-color:var(--oranye-muda); }
+  .filter-btn.active-coklat { background:var(--coklat-muda); color:white; border-color:var(--coklat-muda); }
+
+  /* PINJAMAN CARD */
+  .pinjaman-list { display:flex; flex-direction:column; gap:12px; }
+  .pinjaman-card { background:var(--putih); border-radius:14px; padding:16px; box-shadow:0 2px 10px rgba(0,0,0,0.06); border-left:5px solid var(--hijau-muda); animation:fadeIn 0.3s ease; }
+  .pinjaman-card.macet { border-left-color:var(--merah); }
+  .pinjaman-card.lunas { border-left-color:var(--emas); opacity:0.8; }
+  .pinjaman-card.mudharabah { border-left-color:var(--ungu); }
+  .pin-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px; }
+  .pin-nama { font-weight:700; font-size:15px; color:var(--hijau-gelap); }
+  .pin-alamat { font-size:11px; color:var(--abu); margin-top:2px; }
+  .pin-status { font-family:'IBM Plex Mono',monospace; font-size:10px; font-weight:600; padding:4px 10px; border-radius:20px; white-space:nowrap; }
+  .status-aktif { background:#d4edda; color:#155724; }
+  .status-macet { background:var(--merah-muda); color:var(--merah); }
+  .status-lunas { background:#fff3cd; color:#856404; }
+  .status-mudharabah { background:#ede7f6; color:#6d3b8e; }
+  .pin-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-bottom:12px; }
+  .pin-item-label { font-size:10px; color:var(--abu); font-family:'IBM Plex Mono',monospace; text-transform:uppercase; letter-spacing:0.5px; }
+  .pin-item-val { font-size:13px; font-weight:700; color:var(--hitam); margin-top:2px; font-family:'IBM Plex Mono',monospace; }
+  .wadiah-badge { display:inline-flex; align-items:center; gap:6px; background:#ede7f6; border-radius:8px; padding:6px 12px; margin-bottom:10px; font-size:12px; color:var(--ungu); font-family:'IBM Plex Mono',monospace; font-weight:600; }
+
+  /* PROGRESS */
+  .progress-wrap { margin-bottom:12px; }
+  .progress-label { display:flex; justify-content:space-between; font-size:11px; color:var(--abu); margin-bottom:4px; font-family:'IBM Plex Mono',monospace; }
+  .progress-bar { height:8px; background:var(--krem-gelap); border-radius:10px; overflow:hidden; }
+  .progress-fill { height:100%; background:linear-gradient(90deg,var(--hijau-muda),var(--emas)); border-radius:10px; transition:width 0.5s ease; }
+  .progress-fill.teal { background:linear-gradient(90deg,var(--teal),var(--teal-muda)); }
+  .progress-fill.oranye { background:linear-gradient(90deg,var(--oranye),var(--oranye-muda)); }
+  .progress-fill.coklat { background:linear-gradient(90deg,var(--coklat),var(--coklat-muda)); }
+
+  .pin-actions { display:flex; gap:8px; flex-wrap:wrap; }
+
+  /* CICILAN HISTORY */
+  .cicilan-list { margin-top:10px; border-top:1px solid var(--krem-gelap); padding-top:10px; display:none; }
+  .cicilan-list.open { display:block; }
+  .cicilan-item { display:flex; justify-content:space-between; align-items:center; padding:6px 0; border-bottom:1px dashed var(--krem-gelap); font-size:12px; }
+  .cicilan-tgl { color:var(--abu); font-family:'IBM Plex Mono',monospace; min-width:80px; }
+  .cicilan-jml { font-weight:700; color:var(--hijau); font-family:'IBM Plex Mono',monospace; }
+  .cicilan-ket { color:var(--abu); font-size:11px; text-align:right; }
+
+  /* CHIP */
+  .chip { display:inline-block; background:var(--krem-gelap); color:var(--abu); border-radius:20px; padding:3px 10px; font-size:11px; font-family:'IBM Plex Mono',monospace; margin:2px; }
+  .chip.hijau { background:#d4edda; color:#155724; }
+  .chip.ungu { background:#ede7f6; color:var(--ungu); }
+  .chip.teal { background:var(--teal-muda2); color:var(--teal); }
+  .chip.oranye { background:var(--oranye-bg); color:var(--oranye); }
+  .chip.coklat { background:var(--coklat-bg); color:var(--coklat); }
+
+  /* MODAL */
+  .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:200; justify-content:center; align-items:flex-end; }
+  .modal-overlay.open { display:flex; }
+  .modal-box { background:var(--putih); border-radius:20px 20px 0 0; padding:24px 20px; width:100%; max-width:480px; animation:slideUp 0.3s ease; max-height:90vh; overflow-y:auto; }
+  @keyframes slideUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
+  .modal-title { font-family:'Playfair Display',serif; font-size:18px; color:var(--hijau-gelap); font-weight:700; margin-bottom:16px; }
+  .modal-info { background:var(--krem); border-radius:10px; padding:12px; margin-bottom:16px; font-size:13px; }
+  .modal-row { display:flex; justify-content:space-between; padding:4px 0; }
+  .modal-actions { display:flex; gap:10px; margin-top:8px; }
+
+  /* WADIAH TAB */
+  .wadiah-list { display:flex; flex-direction:column; gap:10px; }
+  .wadiah-card { background:var(--putih); border-radius:14px; padding:16px; box-shadow:0 2px 10px rgba(0,0,0,0.06); border-left:5px solid var(--ungu); display:flex; justify-content:space-between; align-items:center; }
+  .wadiah-nama { font-weight:700; font-size:15px; color:var(--hijau-gelap); }
+  .wadiah-alamat { font-size:11px; color:var(--abu); margin-top:2px; }
+  .wadiah-saldo { text-align:right; flex-shrink:0; }
+  .wadiah-saldo-val { font-family:'IBM Plex Mono',monospace; font-size:16px; font-weight:700; color:var(--ungu); }
+  .wadiah-saldo-label { font-size:10px; color:var(--abu); font-family:'IBM Plex Mono',monospace; text-transform:uppercase; margin-top:2px; }
+  .wadiah-actions { display:flex; gap:6px; margin-top:8px; flex-wrap:wrap; }
+
+  /* TABUNGAN */
+  .tabungan-list { display:flex; flex-direction:column; gap:10px; }
+  .tabungan-card { background:var(--putih); border-radius:14px; padding:16px; box-shadow:0 2px 10px rgba(0,0,0,0.06); border-left:5px solid var(--teal); animation:fadeIn 0.3s ease; }
+  .tabungan-nama { font-weight:700; font-size:15px; color:var(--hijau-gelap); }
+  .tabungan-meta { font-size:11px; color:var(--abu); margin-top:2px; }
+  .tabungan-saldo-wrap { text-align:right; flex-shrink:0; }
+  .tabungan-saldo-val { font-family:'IBM Plex Mono',monospace; font-size:18px; font-weight:700; color:var(--teal); }
+  .tabungan-saldo-label { font-size:10px; color:var(--abu); font-family:'IBM Plex Mono',monospace; text-transform:uppercase; margin-top:2px; }
+  .tabungan-stats { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin:12px 0; }
+  .tabungan-stat-label { font-size:10px; color:var(--abu); font-family:'IBM Plex Mono',monospace; text-transform:uppercase; }
+  .tabungan-stat-val { font-size:12px; font-weight:700; color:var(--hitam); margin-top:2px; font-family:'IBM Plex Mono',monospace; }
+  .tabungan-actions { display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; }
+  .tabungan-target-bar { margin:10px 0; }
+  .tabungan-target-label { display:flex; justify-content:space-between; font-size:11px; color:var(--abu); margin-bottom:4px; font-family:'IBM Plex Mono',monospace; }
+
+  /* DONATUR STYLES */
+  .donatur-list { display:flex; flex-direction:column; gap:12px; }
+  .donatur-card { background:var(--putih); border-radius:14px; padding:16px; box-shadow:0 2px 10px rgba(0,0,0,0.06); border-left:5px solid var(--oranye-muda); animation:fadeIn 0.3s ease; }
+  .donatur-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px; }
+  .donatur-nama { font-weight:700; font-size:15px; color:var(--hijau-gelap); }
+  .donatur-meta { font-size:11px; color:var(--abu); margin-top:2px; }
+  .donatur-total { text-align:right; flex-shrink:0; }
+  .donatur-total-val { font-family:'IBM Plex Mono',monospace; font-size:16px; font-weight:700; color:var(--oranye-muda); }
+  .donatur-total-label { font-size:10px; color:var(--abu); font-family:'IBM Plex Mono',monospace; text-transform:uppercase; margin-top:2px; }
+  .donatur-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:10px; }
+  .donatur-item-label { font-size:10px; color:var(--abu); font-family:'IBM Plex Mono',monospace; text-transform:uppercase; }
+  .donatur-item-val { font-size:13px; font-weight:700; margin-top:2px; font-family:'IBM Plex Mono',monospace; }
+  .donatur-actions { display:flex; gap:8px; flex-wrap:wrap; }
+
+  /* INVESTOR STYLES */
+  .investor-list { display:flex; flex-direction:column; gap:12px; }
+  .investor-card { background:var(--putih); border-radius:14px; padding:16px; box-shadow:0 2px 10px rgba(0,0,0,0.06); border-left:5px solid var(--coklat-muda); animation:fadeIn 0.3s ease; }
+  .investor-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px; }
+  .investor-nama { font-weight:700; font-size:15px; color:var(--hijau-gelap); }
+  .investor-meta { font-size:11px; color:var(--abu); margin-top:2px; }
+  .investor-modal-val { text-align:right; flex-shrink:0; }
+  .investor-modal-rp { font-family:'IBM Plex Mono',monospace; font-size:16px; font-weight:700; color:var(--coklat-muda); }
+  .investor-modal-label { font-size:10px; color:var(--abu); font-family:'IBM Plex Mono',monospace; text-transform:uppercase; margin-top:2px; }
+  .investor-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-bottom:10px; }
+  .investor-item-label { font-size:10px; color:var(--abu); font-family:'IBM Plex Mono',monospace; text-transform:uppercase; }
+  .investor-item-val { font-size:13px; font-weight:700; margin-top:2px; font-family:'IBM Plex Mono',monospace; }
+  .investor-actions { display:flex; gap:8px; flex-wrap:wrap; }
+  .investor-status-badge { font-family:'IBM Plex Mono',monospace; font-size:10px; font-weight:600; padding:4px 10px; border-radius:20px; white-space:nowrap; }
+  .inv-aktif { background:#fff3ea; color:var(--oranye); }
+  .inv-jatuh-tempo { background:var(--merah-muda); color:var(--merah); }
+  .inv-selesai { background:#fff3cd; color:#856404; }
+
+  /* PREVIEW BOXES */
+  .nabung-preview { background:linear-gradient(135deg,#0a4a4d,var(--teal-muda)); border-radius:12px; padding:14px 16px; margin-bottom:14px; display:none; }
+  .nabung-preview-title { font-family:'IBM Plex Mono',monospace; font-size:10px; color:rgba(255,255,255,0.55); text-transform:uppercase; letter-spacing:1px; margin-bottom:8px; }
+  .nabung-preview-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  .nabung-item-label { font-size:10px; color:rgba(255,255,255,0.5); font-family:'IBM Plex Mono',monospace; }
+  .nabung-item-val { font-family:'IBM Plex Mono',monospace; font-size:14px; font-weight:600; color:#a8f0e8; margin-top:2px; }
+
+  .invest-preview { background:linear-gradient(135deg,#4a2e00,var(--coklat-muda)); border-radius:12px; padding:14px 16px; margin-bottom:14px; display:none; }
+  .invest-preview-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; }
+
+  /* AKAD BANNER */
+  .akad-banner { border-radius:12px; padding:12px 16px; margin-bottom:14px; display:flex; align-items:center; gap:10px; }
+  .akad-banner.hijau-banner { background:linear-gradient(135deg,var(--hijau-gelap),#1a5c35); }
+  .akad-banner.teal-banner { background:linear-gradient(135deg,#0a4a4d,var(--teal)); }
+  .akad-banner.oranye-banner { background:linear-gradient(135deg,#7a2f00,var(--oranye-muda)); }
+  .akad-banner.coklat-banner { background:linear-gradient(135deg,#4a2e00,var(--coklat-muda)); }
+  .akad-banner-icon { font-size:22px; }
+  .akad-banner-text { font-family:'IBM Plex Mono',monospace; font-size:11px; color:rgba(255,255,255,0.7); line-height:1.5; }
+  .akad-banner-text b { color:var(--emas-muda); }
+
+  /* LAPORAN */
+  .laporan-section { margin-bottom:16px; }
+  .laporan-title { font-family:'Playfair Display',serif; font-size:15px; font-weight:700; color:var(--hijau-gelap); margin-bottom:12px; }
+  .laporan-row { display:flex; justify-content:space-between; align-items:center; padding:10px 14px; background:var(--putih); border-radius:10px; margin-bottom:6px; font-size:13px; box-shadow:0 1px 4px rgba(0,0,0,0.05); }
+  .laporan-row .label { color:var(--abu); }
+  .laporan-row .val { font-weight:700; font-family:'IBM Plex Mono',monospace; color:var(--hijau-gelap); }
+  .laporan-row .val.merah { color:var(--merah); }
+  .laporan-row .val.emas { color:var(--emas); }
+  .laporan-row .val.ungu { color:var(--ungu); }
+  .laporan-row .val.teal { color:var(--teal); }
+  .laporan-row .val.oranye { color:var(--oranye-muda); }
+  .laporan-row .val.coklat { color:var(--coklat-muda); }
+
+  /* EMPTY */
+  .empty-state { text-align:center; padding:40px 20px; color:var(--abu); }
+  .empty-icon { font-size:48px; margin-bottom:12px; }
+  .empty-text { font-size:14px; }
+
+  /* TOAST */
+  .toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(80px); background:var(--hijau-gelap); color:var(--emas-muda); font-family:'IBM Plex Mono',monospace; font-size:13px; font-weight:600; padding:12px 24px; border-radius:30px; z-index:999; transition:transform 0.3s ease; box-shadow:0 4px 20px rgba(0,0,0,0.2); white-space:nowrap; }
+  .toast.show { transform:translateX(-50%) translateY(0); }
+
+  /* SECTION DIVIDER */
+  .section-divider { display:flex; align-items:center; gap:10px; margin:16px 0 12px; }
+  .section-divider-line { flex:1; height:1px; background:var(--krem-gelap); }
+  .section-divider-text { font-family:'IBM Plex Mono',monospace; font-size:10px; color:var(--abu); text-transform:uppercase; letter-spacing:1px; white-space:nowrap; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-inner">
+    <div>
+      <div class="header-logo">🌾 TAMARA</div>
+      <div class="header-sub">Bahula Tani Nusantara · Gunungguruh</div>
+    </div>
+    <div class="header-badge" id="tgl-header">—</div>
+  </div>
+</div>
+
+<!-- SUMMARY -->
+<div class="summary-wrap">
+  <div class="sum-card">
+    <div class="sum-label">Disalurkan</div>
+    <div class="sum-value" id="sum-total">Rp 0</div>
+  </div>
+  <div class="sum-card merah">
+    <div class="sum-label">Sisa Piutang</div>
+    <div class="sum-value merah" id="sum-sisa">Rp 0</div>
+  </div>
+  <div class="sum-card emas">
+    <div class="sum-label">Kembali</div>
+    <div class="sum-value" id="sum-kembali">Rp 0</div>
+  </div>
+  <div class="sum-card ungu">
+    <div class="sum-label">Wadiah</div>
+    <div class="sum-value ungu" id="sum-wadiah">Rp 0</div>
+  </div>
+  <div class="sum-card teal">
+    <div class="sum-label">Tabungan</div>
+    <div class="sum-value teal" id="sum-tabungan">Rp 0</div>
+  </div>
+  <div class="sum-card oranye">
+    <div class="sum-label">Donasi</div>
+    <div class="sum-value oranye" id="sum-donatur">Rp 0</div>
+  </div>
+  <div class="sum-card coklat">
+    <div class="sum-label">Modal Investor</div>
+    <div class="sum-value coklat" id="sum-investor">Rp 0</div>
+  </div>
+  <div class="sum-card emas">
+    <div class="sum-label">Ujrah</div>
+    <div class="sum-value" id="sum-ujrah">Rp 0</div>
+  </div>
+  <div class="sum-card biru">
+    <div class="sum-label">Peminjam</div>
+    <div class="sum-value" id="sum-peminjam">0 org</div>
+  </div>
+</div>
+
+<!-- TABS -->
+<div class="nav-tabs">
+  <button class="tab-btn active" onclick="showTab('pinjaman',this)">📋 Pinjaman</button>
+  <button class="tab-btn" onclick="showTab('tambah',this)">➕ Tambah</button>
+  <button class="tab-btn" onclick="showTab('tabungan',this)">🏦 Tabungan</button>
+  <button class="tab-btn" onclick="showTab('wadiah',this)">💜 Wadiah</button>
+  <button class="tab-btn" onclick="showTab('donatur',this)">🤲 Donatur</button>
+  <button class="tab-btn" onclick="showTab('investor',this)">💼 Investor</button>
+  <button class="tab-btn" onclick="showTab('laporan',this)">📊 Laporan</button>
+</div>
+
+<div class="content">
+
+  <!-- TAB: PINJAMAN -->
+  <div id="tab-pinjaman" class="section active">
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" class="search-input" placeholder="Cari nama anggota..." oninput="renderList()" id="search-input">
+    </div>
+    <div class="filter-wrap">
+      <button class="filter-btn active" onclick="setFilter('semua',this,'')">Semua</button>
+      <button class="filter-btn" onclick="setFilter('aktif',this,'')">Aktif</button>
+      <button class="filter-btn" onclick="setFilter('macet',this,'')">Macet</button>
+      <button class="filter-btn" onclick="setFilter('lunas',this,'')">Lunas</button>
+      <button class="filter-btn" onclick="setFilter('mudharabah',this,'')">Mudharabah</button>
+    </div>
+    <div class="pinjaman-list" id="pinjaman-list"></div>
+  </div>
+
+  <!-- TAB: TAMBAH PINJAMAN -->
+  <div id="tab-tambah" class="section">
+    <div class="form-card">
+      <div class="form-title">📝 Data Anggota Peminjam</div>
+      <div class="form-group">
+        <label class="form-label">Nama Lengkap</label>
+        <input type="text" class="form-input" id="f-nama" placeholder="Nama anggota...">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Alamat / RT-RW</label>
+        <input type="text" class="form-input" id="f-alamat" placeholder="Cth: RT 02/03 Kp. Cibatu">
+      </div>
+      <div class="form-group">
+        <label class="form-label">No. HP / WA</label>
+        <input type="tel" class="form-input" id="f-hp" placeholder="083x-xxxx-xxxx">
+      </div>
+    </div>
+    <div class="form-card">
+      <div class="form-title">💰 Detail Pinjaman</div>
+      <div class="form-group">
+        <label class="form-label">Jenis Akad</label>
+        <select class="form-input" id="f-akad" onchange="onAkadChange()">
+          <option value="ujrah">Pinjaman Reguler — Akad Ujrah</option>
+          <option value="mudharabah">Pinjaman Usaha — Akad Mudharabah</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Jumlah Pinjaman (Rp)</label>
+        <input type="number" class="form-input" id="f-jumlah" placeholder="500000" oninput="updatePreview()">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Tenor (Minggu)</label>
+          <input type="number" class="form-input" id="f-tenor" placeholder="10" min="1" oninput="updatePreview()">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Wadiah (Rp)</label>
+          <input type="number" class="form-input" id="f-wadiah" placeholder="200000" value="200000">
+        </div>
+      </div>
+      <div id="mudh-section" style="display:none">
+        <div class="form-group">
+          <label class="form-label">Nisbah Bagi Hasil BTN</label>
+          <select class="form-input" id="f-nisbah" onchange="updatePreview()">
+            <option value="10">10% — Paket Ringan</option>
+            <option value="20">20% — Paket Standar</option>
+            <option value="30" selected>30% — Paket Sedang</option>
+            <option value="40">40% — Paket Penuh</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Estimasi Profit/Bulan (Rp)</label>
+          <input type="number" class="form-input" id="f-profit" placeholder="1000000" oninput="updatePreview()">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Tujuan Pinjaman</label>
+        <select class="form-input" id="f-tujuan">
+          <option value="">Pilih tujuan...</option>
+          <option>Modal usaha warung</option>
+          <option>Kebutuhan pertanian</option>
+          <option>Biaya pendidikan</option>
+          <option>Kesehatan / berobat</option>
+          <option>Renovasi rumah</option>
+          <option>Lainnya</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Tanggal Mulai</label>
+        <input type="date" class="form-input" id="f-tanggal">
+      </div>
+      <div class="ujrah-preview" id="preview-ujrah">
+        <div class="ujrah-preview-title">✦ Rincian Akad Ujrah</div>
+        <div class="ujrah-preview-grid">
+          <div><div class="ujrah-item-label">Ujrah</div><div class="ujrah-item-val" id="prev-ujrah">—</div></div>
+          <div><div class="ujrah-item-label">Cicilan/Minggu</div><div class="ujrah-item-val" id="prev-cicilan">—</div></div>
+          <div><div class="ujrah-item-label">Total Kembali</div><div class="ujrah-item-val" id="prev-total">—</div></div>
+        </div>
+      </div>
+      <div class="ujrah-preview" id="preview-mudh" style="background:linear-gradient(135deg,#4a1f6b,#6d3b8e)">
+        <div class="ujrah-preview-title">✦ Rincian Mudharabah</div>
+        <div class="ujrah-preview-grid">
+          <div><div class="ujrah-item-label">Nisbah BTN</div><div class="ujrah-item-val" id="prev-nisbah">—</div></div>
+          <div><div class="ujrah-item-label">Bagi Hasil/Bln</div><div class="ujrah-item-val" id="prev-bagi">—</div></div>
+          <div><div class="ujrah-item-label">Cicilan Pokok</div><div class="ujrah-item-val" id="prev-pokok">—</div></div>
+        </div>
+      </div>
+      <button class="btn btn-hijau" onclick="tambahPinjaman()">✅ Simpan Pinjaman</button>
+    </div>
+  </div>
+
+  <!-- TAB: TABUNGAN -->
+  <div id="tab-tabungan" class="section">
+    <div class="form-card" style="border-top:4px solid var(--teal)">
+      <div class="form-title" style="color:var(--teal)">🏦 Catat Transaksi Tabungan</div>
+      <div class="form-group">
+        <label class="form-label">Nama Anggota</label>
+        <input type="text" class="form-input" id="tb-nama" placeholder="Nama anggota..." oninput="updateNabungPreview()">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Jenis Transaksi</label>
+          <select class="form-input" id="tb-jenis" onchange="updateNabungPreview()">
+            <option value="setor">💰 Setor</option>
+            <option value="tarik">📤 Tarik</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Jenis Tabungan</label>
+          <select class="form-input" id="tb-tipe" onchange="updateNabungPreview()">
+            <option value="reguler">Reguler</option>
+            <option value="wajib">Wajib</option>
+            <option value="qurban">Qurban</option>
+            <option value="pendidikan">Pendidikan</option>
+            <option value="hari-raya">Hari Raya</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Jumlah (Rp)</label>
+          <input type="number" class="form-input" id="tb-jumlah" placeholder="50000" oninput="updateNabungPreview()">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Target (Rp, opsional)</label>
+          <input type="number" class="form-input" id="tb-target" placeholder="1000000">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Keterangan</label>
+        <input type="text" class="form-input" id="tb-ket" placeholder="Setoran rutin / tarik darurat...">
+      </div>
+      <div class="nabung-preview" id="preview-nabung">
+        <div class="nabung-preview-title">✦ Info Tabungan</div>
+        <div class="nabung-preview-grid">
+          <div><div class="nabung-item-label">Saldo Sekarang</div><div class="nabung-item-val" id="prev-saldo-tb">—</div></div>
+          <div><div class="nabung-item-label">Setelah Transaksi</div><div class="nabung-item-val" id="prev-saldo-after">—</div></div>
+        </div>
+      </div>
+      <button class="btn btn-teal" onclick="tambahTabungan()">🏦 Simpan Tabungan</button>
+    </div>
+    <div class="akad-banner teal-banner">
+      <div class="akad-banner-icon">🕌</div>
+      <div class="akad-banner-text"><b>Akad Mudharabah Mutlaqah</b><br>Tabungan dikelola secara syariah dengan bagi hasil sesuai nisbah.</div>
+    </div>
+    <div class="filter-wrap" id="filter-tabungan">
+      <button class="filter-btn active" onclick="setTabFilter('semua',this)">Semua</button>
+      <button class="filter-btn" onclick="setTabFilter('reguler',this)">Reguler</button>
+      <button class="filter-btn" onclick="setTabFilter('wajib',this)">Wajib</button>
+      <button class="filter-btn" onclick="setTabFilter('qurban',this)">Qurban</button>
+      <button class="filter-btn" onclick="setTabFilter('pendidikan',this)">Pendidikan</button>
+      <button class="filter-btn" onclick="setTabFilter('hari-raya',this)">Hari Raya</button>
+    </div>
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" class="search-input" placeholder="Cari penabung..." oninput="renderTabungan()" id="search-tabungan">
+    </div>
+    <div class="tabungan-list" id="tabungan-list"></div>
+  </div>
+
+  <!-- TAB: WADIAH -->
+  <div id="tab-wadiah" class="section">
+    <div class="form-card" style="border-top:4px solid var(--ungu)">
+      <div class="form-title" style="color:var(--ungu)">💜 Tambah / Update Wadiah</div>
+      <div class="form-group">
+        <label class="form-label">Nama Anggota</label>
+        <input type="text" class="form-input" id="w-nama" placeholder="Nama anggota...">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Jumlah (Rp)</label>
+          <input type="number" class="form-input" id="w-jumlah" placeholder="200000">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Jenis</label>
+          <select class="form-input" id="w-jenis">
+            <option value="setor">Setor Wadiah</option>
+            <option value="tarik">Tarik Wadiah</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Keterangan</label>
+        <input type="text" class="form-input" id="w-ket" placeholder="Setor awal / tambahan...">
+      </div>
+      <button class="btn btn-emas" onclick="tambahWadiah()" style="color:var(--hijau-gelap)">💜 Simpan Wadiah</button>
+    </div>
+    <div class="akad-banner hijau-banner">
+      <div class="akad-banner-icon">🕌</div>
+      <div class="akad-banner-text"><b>Akad Wadiah Yad Amanah</b><br>Titipan murni milik anggota. Bisa ditambah & ditarik kapan saja.</div>
+    </div>
+    <div class="wadiah-list" id="wadiah-list"></div>
+  </div>
+
+  <!-- TAB: DONATUR -->
+  <div id="tab-donatur" class="section">
+    <div class="form-card" style="border-top:4px solid var(--oranye-muda)">
+      <div class="form-title" style="color:var(--oranye)">🤲 Catat Donatur</div>
+      <div class="form-group">
+        <label class="form-label">Nama Donatur</label>
+        <input type="text" class="form-input" id="dn-nama" placeholder="Nama donatur...">
+      </div>
+      <div class="form-group">
+        <label class="form-label">No. HP / WA (opsional)</label>
+        <input type="tel" class="form-input" id="dn-hp" placeholder="083x-xxxx-xxxx">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Jenis Akad Donasi</label>
+          <select class="form-input" id="dn-akad">
+            <option value="hibah">🎁 Hibah — Donasi Murni</option>
+            <option value="infaq">🌿 Infaq / Shadaqah</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Jumlah Donasi (Rp)</label>
+          <input type="number" class="form-input" id="dn-jumlah" placeholder="100000">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Peruntukan / Tujuan Donasi</label>
+        <select class="form-input" id="dn-tujuan">
+          <option value="Operasional BTN">Operasional BTN</option>
+          <option value="Dana Sosial Anggota">Dana Sosial Anggota</option>
+          <option value="Beasiswa Pendidikan">Beasiswa Pendidikan</option>
+          <option value="Dana Qurban Bersama">Dana Qurban Bersama</option>
+          <option value="Pembangunan Fasilitas">Pembangunan Fasilitas</option>
+          <option value="Lainnya">Lainnya</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Tanggal Donasi</label>
+        <input type="date" class="form-input" id="dn-tanggal">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Catatan</label>
+        <input type="text" class="form-input" id="dn-ket" placeholder="Catatan tambahan...">
+      </div>
+      <button class="btn btn-oranye" onclick="tambahDonatur()">🤲 Simpan Donasi</button>
+    </div>
+
+    <div class="akad-banner oranye-banner">
+      <div class="akad-banner-icon">🕌</div>
+      <div class="akad-banner-text">
+        <b>Hibah</b> — Pemberian murni, tidak mengharap imbalan.<br>
+        <b>Infaq/Shadaqah</b> — Pengeluaran di jalan Allah untuk kebaikan sosial.
+      </div>
+    </div>
+
+    <div class="filter-wrap" id="filter-donatur">
+      <button class="filter-btn active" onclick="setDonaturFilter('semua',this)">Semua</button>
+      <button class="filter-btn" onclick="setDonaturFilter('hibah',this)">Hibah</button>
+      <button class="filter-btn" onclick="setDonaturFilter('infaq',this)">Infaq</button>
+    </div>
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" class="search-input" placeholder="Cari nama donatur..." oninput="renderDonatur()" id="search-donatur">
+    </div>
+    <div class="donatur-list" id="donatur-list"></div>
+  </div>
+
+  <!-- TAB: INVESTOR -->
+  <div id="tab-investor" class="section">
+    <div class="form-card" style="border-top:4px solid var(--coklat-muda)">
+      <div class="form-title" style="color:var(--coklat)">💼 Catat Investor</div>
+      <div class="form-group">
+        <label class="form-label">Nama Investor</label>
+        <input type="text" class="form-input" id="iv-nama" placeholder="Nama investor...">
+      </div>
+      <div class="form-group">
+        <label class="form-label">No. HP / WA</label>
+        <input type="tel" class="form-input" id="iv-hp" placeholder="083x-xxxx-xxxx">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Jenis Akad Investasi</label>
+          <select class="form-input" id="iv-akad" onchange="updateInvestPreview()">
+            <option value="mudharabah">📈 Mudharabah — Bagi Hasil</option>
+            <option value="musyarakah">🤝 Musyarakah — Bagi Hasil & Risiko</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Nisbah Investor (%)</label>
+          <input type="number" class="form-input" id="iv-nisbah" placeholder="40" min="1" max="99" oninput="updateInvestPreview()">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Modal Investasi (Rp)</label>
+          <input type="number" class="form-input" id="iv-modal" placeholder="5000000" oninput="updateInvestPreview()">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Jangka Waktu (Bulan)</label>
+          <input type="number" class="form-input" id="iv-jangka" placeholder="12" min="1" oninput="updateInvestPreview()">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Tanggal Mulai</label>
+        <input type="date" class="form-input" id="iv-tanggal">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Peruntukannya Modal</label>
+        <select class="form-input" id="iv-tujuan">
+          <option value="Modal Pinjaman Anggota">Modal Pinjaman Anggota</option>
+          <option value="Pengembangan Usaha BTN">Pengembangan Usaha BTN</option>
+          <option value="Pembelian Aset">Pembelian Aset</option>
+          <option value="Lainnya">Lainnya</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Catatan</label>
+        <input type="text" class="form-input" id="iv-ket" placeholder="Kesepakatan tambahan...">
+      </div>
+
+      <!-- PREVIEW INVESTASI -->
+      <div class="invest-preview" id="preview-invest">
+        <div class="ujrah-preview-title">✦ Rincian Akad Investasi</div>
+        <div class="invest-preview-grid">
+          <div><div class="ujrah-item-label">Modal</div><div class="ujrah-item-val" id="prev-iv-modal">—</div></div>
+          <div><div class="ujrah-item-label">Nisbah Investor</div><div class="ujrah-item-val" id="prev-iv-nisbah">—</div></div>
+          <div><div class="ujrah-item-label">Jatuh Tempo</div><div class="ujrah-item-val" id="prev-iv-jatuh">—</div></div>
+        </div>
+      </div>
+
+      <button class="btn btn-coklat" onclick="tambahInvestor()">💼 Simpan Investor</button>
+    </div>
+
+    <div class="akad-banner coklat-banner">
+      <div class="akad-banner-icon">🕌</div>
+      <div class="akad-banner-text">
+        <b>Mudharabah</b> — Investor menyetor modal, BTN mengelola. Bagi hasil sesuai nisbah.<br>
+        <b>Musyarakah</b> — Modal & usaha bersama. Untung & rugi ditanggung proporsional.
+      </div>
+    </div>
+
+    <div class="filter-wrap" id="filter-investor">
+      <button class="filter-btn active" onclick="setInvestorFilter('semua',this)">Semua</button>
+      <button class="filter-btn" onclick="setInvestorFilter('mudharabah',this)">Mudharabah</button>
+      <button class="filter-btn" onclick="setInvestorFilter('musyarakah',this)">Musyarakah</button>
+      <button class="filter-btn" onclick="setInvestorFilter('aktif',this)">Aktif</button>
+      <button class="filter-btn" onclick="setInvestorFilter('selesai',this)">Selesai</button>
+    </div>
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" class="search-input" placeholder="Cari nama investor..." oninput="renderInvestor()" id="search-investor">
+    </div>
+    <div class="investor-list" id="investor-list"></div>
+  </div>
+
+  <!-- TAB: LAPORAN -->
+  <div id="tab-laporan" class="section">
+    <div class="form-card laporan-section">
+      <div class="laporan-title">📊 Ringkasan Kas TAMARA</div>
+      <div class="laporan-row"><span class="label">Total Dana Disalurkan</span><span class="val" id="lap-total">Rp 0</span></div>
+      <div class="laporan-row"><span class="label">Sudah Kembali</span><span class="val emas" id="lap-kembali">Rp 0</span></div>
+      <div class="laporan-row"><span class="label">Sisa Piutang Aktif</span><span class="val merah" id="lap-sisa">Rp 0</span></div>
+      <div class="laporan-row"><span class="label">Total Ujrah Terkumpul</span><span class="val emas" id="lap-ujrah">Rp 0</span></div>
+      <div class="laporan-row"><span class="label">Total Wadiah Mengendap</span><span class="val ungu" id="lap-wadiah">Rp 0</span></div>
+      <div class="laporan-row"><span class="label">Total Tabungan Anggota</span><span class="val teal" id="lap-tabungan">Rp 0</span></div>
+      <div class="laporan-row"><span class="label">Total Donasi Masuk</span><span class="val oranye" id="lap-donatur">Rp 0</span></div>
+      <div class="laporan-row"><span class="label">Total Modal Investor</span><span class="val coklat" id="lap-investor">Rp 0</span></div>
+    </div>
+    <div class="form-card laporan-section">
+      <div class="laporan-title">🤲 Rekap Donasi</div>
+      <div class="laporan-row"><span class="label">Akad Hibah</span><span class="val oranye" id="lap-dn-hibah">Rp 0</span></div>
+      <div class="laporan-row"><span class="label">Akad Infaq/Shadaqah</span><span class="val oranye" id="lap-dn-infaq">Rp 0</span></div>
+      <div class="laporan-row"><span class="label">Jumlah Donatur</span><span class="val" id="lap-dn-count">0 orang</span></div>
+    </div>
+    <div class="form-card laporan-section">
+      <div class="laporan-title">💼 Rekap Investor</div>
+      <div class="laporan-row"><span class="label">Mudharabah</span><span class="val coklat" id="lap-iv-mudh">Rp 0</span></div>
+      <div class="laporan-row"><span class="label">Musyarakah</span><span class="val coklat" id="lap-iv-mush">Rp 0</span></div>
+      <div class="laporan-row"><span class="label">Investor Aktif</span><span class="val" id="lap-iv-aktif">0</span></div>
+      <div class="laporan-row"><span class="label">Investor Selesai</span><span class="val emas" id="lap-iv-selesai">0</span></div>
+    </div>
+    <div class="form-card laporan-section">
+      <div class="laporan-title">📋 Alokasi Ujrah</div>
+      <div class="laporan-row"><span class="label">Pendamping Anggota (50%)</span><span class="val" id="lap-pendamping">Rp 0</span></div>
+      <div class="laporan-row"><span class="label">Kas Operasional BTN (31%)</span><span class="val" id="lap-ops">Rp 0</span></div>
+      <div class="laporan-row"><span class="label">Dana Cadangan Macet (19%)</span><span class="val" id="lap-cadangan">Rp 0</span></div>
+    </div>
+    <div class="form-card laporan-section">
+      <div class="laporan-title">👥 Status Pinjaman</div>
+      <div class="laporan-row"><span class="label">Aktif</span><span class="val" id="lap-aktif">0</span></div>
+      <div class="laporan-row"><span class="label">Macet</span><span class="val merah" id="lap-macet">0</span></div>
+      <div class="laporan-row"><span class="label">Lunas</span><span class="val emas" id="lap-lunas">0</span></div>
+      <div class="laporan-row"><span class="label">Mudharabah Aktif</span><span class="val ungu" id="lap-mudh">0</span></div>
+    </div>
+    <div class="form-card laporan-section" id="lap-macet-wrap" style="display:none">
+      <div class="laporan-title">⚠️ Pinjaman Macet</div>
+      <div id="lap-macet-list"></div>
+    </div>
+    <button class="btn btn-abu" onclick="exportLaporan()" style="margin-top:4px">📋 Salin Laporan</button>
+    <div style="height:8px"></div>
+    <button class="btn btn-hijau" onclick="exportWA()" style="margin-top:4px">📲 Kirim via WA</button>
+  </div>
+
+</div>
+
+<!-- MODAL CICILAN -->
+<div class="modal-overlay" id="modal-cicilan">
+  <div class="modal-box">
+    <div class="modal-title">💳 Catat Pembayaran</div>
+    <div class="modal-info" id="modal-info-text"></div>
+    <div class="form-group">
+      <label class="form-label">Jumlah Bayar (Rp)</label>
+      <input type="number" class="form-input" id="modal-jumlah" placeholder="Masukkan jumlah...">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Keterangan</label>
+      <input type="text" class="form-input" id="modal-ket" placeholder="Cicilan ke-3 / Ujrah / dll">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Metode Pembayaran</label>
+      <select class="form-input" id="modal-metode">
+        <option value="Transfer Bank">Transfer Bank</option>
+        <option value="QRIS">QRIS</option>
+        <option value="Tunai">Tunai</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Tandai Status</label>
+      <select class="form-input" id="modal-status">
+        <option value="aktif">Aktif — Masih berjalan</option>
+        <option value="macet">Macet — Tidak bayar</option>
+        <option value="lunas">Lunas — Selesai</option>
+      </select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-abu" onclick="closeModal()">Batal</button>
+      <button class="btn btn-hijau" onclick="simpanCicilan()">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL TARIK TABUNGAN -->
+<div class="modal-overlay" id="modal-tarik-tabungan">
+  <div class="modal-box">
+    <div class="modal-title" style="color:var(--teal)">📤 Tarik Tabungan</div>
+    <div class="modal-info" id="modal-tarik-info"></div>
+    <div class="form-group">
+      <label class="form-label">Jumlah Tarik (Rp)</label>
+      <input type="number" class="form-input" id="modal-tarik-jumlah" placeholder="Masukkan jumlah...">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Keterangan</label>
+      <input type="text" class="form-input" id="modal-tarik-ket" placeholder="Keperluan...">
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-abu" onclick="closeModalTarik()">Batal</button>
+      <button class="btn btn-teal" onclick="simpanTarikTabungan()">Tarik</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL STATUS INVESTOR -->
+<div class="modal-overlay" id="modal-status-investor">
+  <div class="modal-box">
+    <div class="modal-title" style="color:var(--coklat)">💼 Update Status Investor</div>
+    <div class="modal-info" id="modal-iv-info"></div>
+    <div class="form-group">
+      <label class="form-label">Status Investasi</label>
+      <select class="form-input" id="modal-iv-status">
+        <option value="aktif">Aktif — Berjalan</option>
+        <option value="jatuh-tempo">Jatuh Tempo — Perlu diselesaikan</option>
+        <option value="selesai">Selesai — Modal dikembalikan</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Catatan</label>
+      <input type="text" class="form-input" id="modal-iv-ket" placeholder="Catatan update...">
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-abu" onclick="closeModalInvestor()">Batal</button>
+      <button class="btn btn-coklat" onclick="simpanStatusInvestor()">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ===== STATE =====
+let data     = JSON.parse(localStorage.getItem('tamara-pinjaman-v3') || '[]');
+let wadata   = JSON.parse(localStorage.getItem('tamara-wadiah-v3')   || '[]');
+let tabdata  = JSON.parse(localStorage.getItem('tamara-tabungan-v1') || '[]');
+let dondata  = JSON.parse(localStorage.getItem('tamara-donatur-v1')  || '[]');
+let invdata  = JSON.parse(localStorage.getItem('tamara-investor-v1') || '[]');
+
+let activeFilter       = 'semua';
+let activeTabFilter    = 'semua';
+let activeDonFilter    = 'semua';
+let activeInvFilter    = 'semua';
+let activePinjamanId   = null;
+let activeTabunganKey  = null;
+let activeInvestorId   = null;
+
+// ===== INIT =====
+const now = new Date();
+document.getElementById('tgl-header').textContent = now.toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'});
+document.getElementById('f-tanggal').value  = now.toISOString().split('T')[0];
+document.getElementById('dn-tanggal').value = now.toISOString().split('T')[0];
+document.getElementById('iv-tanggal').value = now.toISOString().split('T')[0];
+updateSummary(); renderList(); renderWadiah(); renderTabungan(); renderDonatur(); renderInvestor();
+
+// ===== HELPERS =====
+function fmtRp(n){ return Math.round(n).toLocaleString('id-ID'); }
+function getUjrah(jml){ return jml<=500000?25000:jml<=1000000?50000:80000; }
+function tglPlus(tglStr, bulan){
+  const d=new Date(tglStr); d.setMonth(d.getMonth()+bulan); return d.toLocaleDateString('id-ID');
+}
+
+// ===== TABS =====
+function showTab(tab,el){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+  if(el) el.classList.add('active');
+  if(tab==='laporan') renderLaporan();
+  if(tab==='wadiah')  renderWadiah();
+  if(tab==='tabungan') renderTabungan();
+  if(tab==='donatur') renderDonatur();
+  if(tab==='investor') renderInvestor();
+}
+
+function setFilter(f,el,cls){
+  activeFilter=f;
+  document.querySelectorAll('#tab-pinjaman .filter-btn').forEach(b=>{b.classList.remove('active');});
+  el.classList.add('active');
+  renderList();
+}
+function setTabFilter(f,el){ activeTabFilter=f; document.querySelectorAll('#filter-tabungan .filter-btn').forEach(b=>b.classList.remove('active')); el.classList.add('active'); renderTabungan(); }
+function setDonaturFilter(f,el){ activeDonFilter=f; document.querySelectorAll('#filter-donatur .filter-btn').forEach(b=>b.classList.remove('active')); el.classList.add('active'); renderDonatur(); }
+function setInvestorFilter(f,el){ activeInvFilter=f; document.querySelectorAll('#filter-investor .filter-btn').forEach(b=>b.classList.remove('active')); el.classList.add('active'); renderInvestor(); }
+
+// ===== SAVE =====
+function save(){
+  localStorage.setItem('tamara-pinjaman-v3', JSON.stringify(data));
+  localStorage.setItem('tamara-wadiah-v3',   JSON.stringify(wadata));
+  localStorage.setItem('tamara-tabungan-v1', JSON.stringify(tabdata));
+  localStorage.setItem('tamara-donatur-v1',  JSON.stringify(dondata));
+  localStorage.setItem('tamara-investor-v1', JSON.stringify(invdata));
+  updateSummary();
+}
+
+// ===== SUMMARY =====
+function updateSummary(){
+  let total=0,sisa=0,kembali=0,ujrahTotal=0;
+  data.forEach(p=>{
+    const ujrah=p.akad==='mudharabah'?0:p.ujrah;
+    const tp=p.jumlah+ujrah;
+    const tc=p.cicilan.reduce((a,c)=>a+c.jumlah,0);
+    total+=p.jumlah; kembali+=tc; ujrahTotal+=ujrah;
+    if(p.status!=='lunas') sisa+=Math.max(0,tp-tc);
+  });
+  const wadTot = wadata.reduce((a,w)=>w.jenis==='setor'?a+w.jumlah:a-w.jumlah,0);
+  const tabTot = tabdata.reduce((a,t)=>t.jenis==='setor'?a+t.jumlah:a-t.jumlah,0);
+  const donTot = dondata.reduce((a,d)=>a+d.jumlah,0);
+  const invTot = invdata.reduce((a,i)=>a+i.modal,0);
+  document.getElementById('sum-total').textContent    = 'Rp '+fmtRp(total);
+  document.getElementById('sum-sisa').textContent     = 'Rp '+fmtRp(Math.max(0,sisa));
+  document.getElementById('sum-kembali').textContent  = 'Rp '+fmtRp(kembali);
+  document.getElementById('sum-wadiah').textContent   = 'Rp '+fmtRp(Math.max(0,wadTot));
+  document.getElementById('sum-ujrah').textContent    = 'Rp '+fmtRp(ujrahTotal);
+  document.getElementById('sum-tabungan').textContent = 'Rp '+fmtRp(Math.max(0,tabTot));
+  document.getElementById('sum-donatur').textContent  = 'Rp '+fmtRp(donTot);
+  document.getElementById('sum-investor').textContent = 'Rp '+fmtRp(invTot);
+  document.getElementById('sum-peminjam').textContent = data.length+' org';
+}
+
+// ===== PREVIEW PINJAMAN =====
+function onAkadChange(){
+  const akad=document.getElementById('f-akad').value;
+  document.getElementById('mudh-section').style.display=akad==='mudharabah'?'block':'none';
+  updatePreview();
+}
+function updatePreview(){
+  const akad=document.getElementById('f-akad').value;
+  const jml=parseFloat(document.getElementById('f-jumlah').value)||0;
+  const tenor=parseInt(document.getElementById('f-tenor').value)||0;
+  if(akad==='ujrah'){
+    document.getElementById('preview-mudh').style.display='none';
+    if(jml>0&&tenor>0){
+      const ujrah=getUjrah(jml);
+      document.getElementById('prev-ujrah').textContent='Rp '+fmtRp(ujrah);
+      document.getElementById('prev-cicilan').textContent='Rp '+fmtRp(Math.ceil((jml+ujrah)/tenor));
+      document.getElementById('prev-total').textContent='Rp '+fmtRp(jml+ujrah);
+      document.getElementById('preview-ujrah').style.display='block';
+    } else { document.getElementById('preview-ujrah').style.display='none'; }
+  } else {
+    document.getElementById('preview-ujrah').style.display='none';
+    const nisbah=parseInt(document.getElementById('f-nisbah').value)||30;
+    const profit=parseFloat(document.getElementById('f-profit').value)||0;
+    if(jml>0&&tenor>0){
+      document.getElementById('prev-nisbah').textContent=nisbah+'% BTN';
+      document.getElementById('prev-bagi').textContent='Rp '+fmtRp(profit*nisbah/100);
+      document.getElementById('prev-pokok').textContent='Rp '+fmtRp(Math.ceil(jml/tenor))+'/mggu';
+      document.getElementById('preview-mudh').style.display='block';
+    } else { document.getElementById('preview-mudh').style.display='none'; }
+  }
+}
+
+// ===== PREVIEW TABUNGAN =====
+function updateNabungPreview(){
+  const nama=document.getElementById('tb-nama').value.trim();
+  const jenis=document.getElementById('tb-jenis').value;
+  const tipe=document.getElementById('tb-tipe').value;
+  const jumlah=parseFloat(document.getElementById('tb-jumlah').value)||0;
+  if(!nama||!jumlah){ document.getElementById('preview-nabung').style.display='none'; return; }
+  const saldo=getSaldoTabungan(nama,tipe);
+  const after=jenis==='setor'?saldo+jumlah:Math.max(0,saldo-jumlah);
+  document.getElementById('prev-saldo-tb').textContent='Rp '+fmtRp(saldo);
+  document.getElementById('prev-saldo-after').textContent='Rp '+fmtRp(after);
+  document.getElementById('preview-nabung').style.display='block';
+}
+function getSaldoTabungan(nama,tipe){
+  return tabdata.filter(t=>t.nama===nama&&t.tipe===tipe).reduce((a,t)=>t.jenis==='setor'?a+t.jumlah:a-t.jumlah,0);
+}
+
+// ===== PREVIEW INVESTOR =====
+function updateInvestPreview(){
+  const modal=parseFloat(document.getElementById('iv-modal').value)||0;
+  const nisbah=parseFloat(document.getElementById('iv-nisbah').value)||0;
+  const jangka=parseInt(document.getElementById('iv-jangka').value)||0;
+  const tgl=document.getElementById('iv-tanggal').value;
+  if(modal>0&&nisbah>0&&jangka>0){
+    document.getElementById('prev-iv-modal').textContent='Rp '+fmtRp(modal);
+    document.getElementById('prev-iv-nisbah').textContent=nisbah+'% untuk investor';
+    document.getElementById('prev-iv-jatuh').textContent=tgl?tglPlus(tgl,jangka):'—';
+    document.getElementById('preview-invest').style.display='block';
+  } else { document.getElementById('preview-invest').style.display='none'; }
+}
+
+// ===== PINJAMAN =====
+function tambahPinjaman(){
+  const nama=document.getElementById('f-nama').value.trim();
+  const alamat=document.getElementById('f-alamat').value.trim();
+  const hp=document.getElementById('f-hp').value.trim();
+  const akad=document.getElementById('f-akad').value;
+  const jumlah=parseFloat(document.getElementById('f-jumlah').value);
+  const tenor=parseInt(document.getElementById('f-tenor').value);
+  const wadiah=parseFloat(document.getElementById('f-wadiah').value)||200000;
+  const tujuan=document.getElementById('f-tujuan').value;
+  const tanggal=document.getElementById('f-tanggal').value;
+  const nisbah=akad==='mudharabah'?parseInt(document.getElementById('f-nisbah').value):0;
+  if(!nama||!jumlah||!tenor||!tanggal){showToast('⚠️ Lengkapi data pinjaman!');return;}
+  const ujrah=akad==='ujrah'?getUjrah(jumlah):0;
+  data.unshift({id:Date.now().toString(),nama,alamat,hp,akad,jumlah,tenor,ujrah,wadiah,tujuan,tanggal,nisbah,status:'aktif',cicilan:[]});
+  if(wadiah>0) wadata.push({id:Date.now()+'w',nama,jumlah:wadiah,jenis:'setor',ket:'Wadiah wajib pinjaman',tgl:now.toLocaleDateString('id-ID')});
+  save(); renderList(); renderWadiah();
+  showToast('✅ Pinjaman '+nama+' disimpan!');
+  ['f-nama','f-alamat','f-hp','f-jumlah','f-tenor'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('f-wadiah').value='200000';
+  document.getElementById('f-tujuan').value='';
+  document.getElementById('preview-ujrah').style.display='none';
+  document.getElementById('preview-mudh').style.display='none';
+  showTab('pinjaman',document.querySelectorAll('.tab-btn')[0]);
+  document.querySelectorAll('.tab-btn')[0].classList.add('active');
+}
+
+function renderList(){
+  const q=document.getElementById('search-input').value.toLowerCase();
+  const list=document.getElementById('pinjaman-list');
+  let filtered=data.filter(p=>{
+    const mf=activeFilter==='semua'||(activeFilter==='mudharabah'&&p.akad==='mudharabah')||(activeFilter!=='mudharabah'&&p.status===activeFilter);
+    const ms=p.nama.toLowerCase().includes(q)||(p.alamat||'').toLowerCase().includes(q);
+    return mf&&ms;
+  });
+  if(filtered.length===0){list.innerHTML=`<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-text">Belum ada data pinjaman.</div></div>`;return;}
+  list.innerHTML=filtered.map(p=>{
+    const ujrah=p.akad==='mudharabah'?0:p.ujrah;
+    const tp=p.jumlah+ujrah;
+    const tc=p.cicilan.reduce((a,c)=>a+c.jumlah,0);
+    const sisa=Math.max(0,tp-tc);
+    const persen=Math.min(100,Math.round(tc/tp*100));
+    const perMinggu=Math.ceil(tp/p.tenor);
+    const isMudh=p.akad==='mudharabah';
+    const cardClass=p.status!=='aktif'?p.status:(isMudh?'mudharabah':'');
+    const statusLabel={aktif:'Aktif',macet:'Macet ⚠️',lunas:'Lunas ✓'}[p.status];
+    const akadChip=isMudh?`<span class="chip ungu">Mudharabah·${p.nisbah}%</span>`:`<span class="chip hijau">Ujrah·Rp ${fmtRp(ujrah)}</span>`;
+    const wadiahBadge=p.wadiah?`<div class="wadiah-badge">💜 Wadiah: Rp ${fmtRp(p.wadiah)}</div>`:'';
+    const cicilanHtml=p.cicilan.length>0?p.cicilan.slice().reverse().map(c=>`<div class="cicilan-item"><span class="cicilan-tgl">${c.tgl}</span><span class="cicilan-jml">+Rp ${fmtRp(c.jumlah)}</span><span class="cicilan-ket">${c.metode||''} ${c.ket||''}</span></div>`).join(''):'<div style="font-size:12px;color:var(--abu);padding:8px 0">Belum ada cicilan.</div>';
+    return `<div class="pinjaman-card ${cardClass}">
+      <div class="pin-header">
+        <div><div class="pin-nama">${p.nama}</div><div class="pin-alamat">${p.alamat||'—'}${p.hp?' · '+p.hp:''}</div>${p.tujuan?`<span class="chip">${p.tujuan}</span>`:''} ${akadChip}</div>
+        <span class="pin-status status-${p.status}">${statusLabel}</span>
+      </div>
+      ${wadiahBadge}
+      <div class="pin-grid">
+        <div><div class="pin-item-label">Pinjaman</div><div class="pin-item-val">Rp ${fmtRp(p.jumlah)}</div></div>
+        <div><div class="pin-item-label">${isMudh?'Cicilan Pokok':'Cicilan/Mggu'}</div><div class="pin-item-val">Rp ${fmtRp(perMinggu)}</div></div>
+        <div><div class="pin-item-label">Sisa</div><div class="pin-item-val" style="color:${sisa>0?'var(--merah)':'var(--hijau)'}">Rp ${fmtRp(sisa)}</div></div>
+      </div>
+      <div class="progress-wrap">
+        <div class="progress-label"><span>Pelunasan ${persen}%</span><span>Tenor ${p.tenor} minggu · ${p.tanggal}</span></div>
+        <div class="progress-bar"><div class="progress-fill" style="width:${persen}%"></div></div>
+      </div>
+      <div class="pin-actions">
+        <button class="btn btn-hijau btn-kecil" onclick="openModal('${p.id}')">+ Cicilan</button>
+        <button class="btn btn-abu btn-kecil" onclick="toggleEl('cic-${p.id}')">📜 Riwayat</button>
+        <button class="btn btn-merah btn-kecil" onclick="hapusPinjaman('${p.id}')">🗑</button>
+      </div>
+      <div class="cicilan-list" id="cic-${p.id}">${cicilanHtml}</div>
+    </div>`;
+  }).join('');
+}
+
+function toggleEl(id){document.getElementById(id).classList.toggle('open');}
+
+// ===== MODAL CICILAN =====
+function openModal(id){
+  activePinjamanId=id;
+  const p=data.find(x=>x.id===id);
+  const ujrah=p.akad==='mudharabah'?0:p.ujrah;
+  const tp=p.jumlah+ujrah;
+  const tc=p.cicilan.reduce((a,c)=>a+c.jumlah,0);
+  const sisa=Math.max(0,tp-tc);
+  const perMinggu=Math.ceil(tp/p.tenor);
+  document.getElementById('modal-info-text').innerHTML=`
+    <div class="modal-row"><span>Anggota:</span><b>${p.nama}</b></div>
+    <div class="modal-row"><span>Pinjaman:</span><b>Rp ${fmtRp(p.jumlah)}</b></div>
+    ${ujrah?`<div class="modal-row"><span>Ujrah:</span><b>Rp ${fmtRp(ujrah)}</b></div>`:''}
+    <div class="modal-row"><span>Sudah Bayar:</span><b style="color:var(--hijau)">Rp ${fmtRp(tc)}</b></div>
+    <div class="modal-row"><span>Sisa:</span><b style="color:var(--merah)">Rp ${fmtRp(sisa)}</b></div>`;
+  document.getElementById('modal-jumlah').value=perMinggu;
+  document.getElementById('modal-ket').value='Cicilan ke-'+(p.cicilan.length+1);
+  document.getElementById('modal-status').value=p.status;
+  document.getElementById('modal-cicilan').classList.add('open');
+}
+function closeModal(){document.getElementById('modal-cicilan').classList.remove('open');activePinjamanId=null;}
+function simpanCicilan(){
+  const jml=parseFloat(document.getElementById('modal-jumlah').value);
+  const ket=document.getElementById('modal-ket').value;
+  const metode=document.getElementById('modal-metode').value;
+  const status=document.getElementById('modal-status').value;
+  if(!jml||jml<=0){showToast('⚠️ Masukkan jumlah bayar!');return;}
+  const idx=data.findIndex(x=>x.id===activePinjamanId);
+  data[idx].cicilan.push({tgl:new Date().toLocaleDateString('id-ID'),jumlah:jml,ket,metode});
+  data[idx].status=status;
+  const p=data[idx]; const ujrah=p.akad==='mudharabah'?0:p.ujrah;
+  if(p.cicilan.reduce((a,c)=>a+c.jumlah,0)>=p.jumlah+ujrah) data[idx].status='lunas';
+  save(); renderList(); closeModal();
+  showToast('✅ Cicilan '+metode+' disimpan!');
+}
+function hapusPinjaman(id){
+  if(!confirm('Hapus data pinjaman ini?')) return;
+  data=data.filter(x=>x.id!==id); save(); renderList(); showToast('🗑 Data dihapus');
+}
+
+// ===== WADIAH =====
+function tambahWadiah(){
+  const nama=document.getElementById('w-nama').value.trim();
+  const jumlah=parseFloat(document.getElementById('w-jumlah').value);
+  const jenis=document.getElementById('w-jenis').value;
+  const ket=document.getElementById('w-ket').value.trim();
+  if(!nama||!jumlah){showToast('⚠️ Lengkapi data wadiah!');return;}
+  wadata.push({id:Date.now().toString(),nama,jumlah,jenis,ket,tgl:new Date().toLocaleDateString('id-ID')});
+  save(); renderWadiah();
+  ['w-nama','w-jumlah','w-ket'].forEach(id=>document.getElementById(id).value='');
+  showToast('✅ Wadiah '+nama+' dicatat!');
+}
+function renderWadiah(){
+  const list=document.getElementById('wadiah-list');
+  const saldoMap={};
+  wadata.forEach(w=>{
+    if(!saldoMap[w.nama]) saldoMap[w.nama]={nama:w.nama,saldo:0,transaksi:[]};
+    saldoMap[w.nama].saldo+=w.jenis==='setor'?w.jumlah:-w.jumlah;
+    saldoMap[w.nama].transaksi.push(w);
+  });
+  const arr=Object.values(saldoMap);
+  if(arr.length===0){list.innerHTML=`<div class="empty-state"><div class="empty-icon">💜</div><div class="empty-text">Belum ada data Wadiah.</div></div>`;return;}
+  list.innerHTML=arr.map(a=>`
+    <div class="wadiah-card">
+      <div>
+        <div class="wadiah-nama">${a.nama}</div>
+        <div class="wadiah-alamat">${a.transaksi.length} transaksi</div>
+        <div class="wadiah-actions">
+          <button class="btn btn-abu btn-kecil" onclick="toggleEl('wtx-${a.nama.replace(/\s/g,'_')}')">📜 Riwayat</button>
+        </div>
+        <div class="cicilan-list" id="wtx-${a.nama.replace(/\s/g,'_')}">
+          ${a.transaksi.slice().reverse().map(t=>`<div class="cicilan-item"><span class="cicilan-tgl">${t.tgl}</span><span class="cicilan-jml" style="color:${t.jenis==='setor'?'var(--hijau)':'var(--merah)'}">${t.jenis==='setor'?'+':'-'}Rp ${fmtRp(t.jumlah)}</span><span class="cicilan-ket">${t.ket||''}</span></div>`).join('')}
+        </div>
+      </div>
+      <div class="wadiah-saldo">
+        <div class="wadiah-saldo-val">Rp ${fmtRp(Math.max(0,a.saldo))}</div>
+        <div class="wadiah-saldo-label">Saldo Wadiah</div>
+        <div style="margin-top:6px"><span class="chip ${a.saldo>=200000?'hijau':''}">${a.saldo>=200000?'✓ Memenuhi':'⚠️ Kurang'}</span></div>
+      </div>
+    </div>`).join('');
+}
+
+// ===== TABUNGAN =====
+function tambahTabungan(){
+  const nama=document.getElementById('tb-nama').value.trim();
+  const jenis=document.getElementById('tb-jenis').value;
+  const tipe=document.getElementById('tb-tipe').value;
+  const jumlah=parseFloat(document.getElementById('tb-jumlah').value);
+  const target=parseFloat(document.getElementById('tb-target').value)||0;
+  const ket=document.getElementById('tb-ket').value.trim();
+  if(!nama||!jumlah||jumlah<=0){showToast('⚠️ Lengkapi data tabungan!');return;}
+  if(jenis==='tarik'){const saldo=getSaldoTabungan(nama,tipe);if(jumlah>saldo){showToast('⚠️ Saldo tidak cukup! Saldo: Rp '+fmtRp(saldo));return;}}
+  tabdata.push({id:Date.now().toString(),nama,tipe,jenis,jumlah,target:target>0?target:null,ket,tgl:new Date().toLocaleDateString('id-ID')});
+  save(); renderTabungan();
+  ['tb-nama','tb-jumlah','tb-target','tb-ket'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('preview-nabung').style.display='none';
+  showToast('✅ Tabungan '+nama+' '+(jenis==='setor'?'ditambahkan':'ditarik')+'!');
+}
+function renderTabungan(){
+  const list=document.getElementById('tabungan-list');
+  const q=(document.getElementById('search-tabungan').value||'').toLowerCase();
+  const groupMap={};
+  tabdata.forEach(t=>{
+    const key=t.nama+'|'+t.tipe;
+    if(!groupMap[key]) groupMap[key]={nama:t.nama,tipe:t.tipe,saldo:0,transaksi:[],target:null};
+    groupMap[key].saldo+=t.jenis==='setor'?t.jumlah:-t.jumlah;
+    groupMap[key].transaksi.push(t);
+    if(t.target) groupMap[key].target=t.target;
+  });
+  let entries=Object.values(groupMap);
+  if(activeTabFilter!=='semua') entries=entries.filter(e=>e.tipe===activeTabFilter);
+  if(q) entries=entries.filter(e=>e.nama.toLowerCase().includes(q));
+  if(entries.length===0){list.innerHTML=`<div class="empty-state"><div class="empty-icon">🏦</div><div class="empty-text">Belum ada data tabungan.</div></div>`;return;}
+  const tipeEmoji={reguler:'💵',wajib:'✅',qurban:'🐄',pendidikan:'🎓','hari-raya':'🌙'};
+  const tipeLabel={reguler:'Reguler',wajib:'Wajib',qurban:'Qurban',pendidikan:'Pendidikan','hari-raya':'Hari Raya'};
+  list.innerHTML=entries.map(e=>{
+    const totalSetor=e.transaksi.filter(t=>t.jenis==='setor').reduce((a,t)=>a+t.jumlah,0);
+    const totalTarik=e.transaksi.filter(t=>t.jenis==='tarik').reduce((a,t)=>a+t.jumlah,0);
+    const persen=e.target?Math.min(100,Math.round(Math.max(0,e.saldo)/e.target*100)):0;
+    const key=e.nama.replace(/\s/g,'_')+'_'+e.tipe;
+    const targetBar=e.target?`<div class="tabungan-target-bar"><div class="tabungan-target-label"><span>Target ${persen}%</span><span>Target: Rp ${fmtRp(e.target)}</span></div><div class="progress-bar"><div class="progress-fill teal" style="width:${persen}%"></div></div></div>`:'';
+    const txHtml=e.transaksi.length>0?e.transaksi.slice().reverse().map(t=>`<div class="cicilan-item"><span class="cicilan-tgl">${t.tgl}</span><span class="cicilan-jml" style="color:${t.jenis==='setor'?'var(--teal)':'var(--merah)'}">${t.jenis==='setor'?'+':'-'}Rp ${fmtRp(t.jumlah)}</span><span class="cicilan-ket">${t.ket||''}</span></div>`).join(''):'<div style="font-size:12px;color:var(--abu);padding:8px 0">Belum ada transaksi.</div>';
+    return `<div class="tabungan-card">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start">
+        <div><div class="tabungan-nama">${e.nama}</div><div class="tabungan-meta">${e.transaksi.length} transaksi</div><span class="chip teal" style="margin-top:4px">${tipeEmoji[e.tipe]} ${tipeLabel[e.tipe]}</span></div>
+        <div class="tabungan-saldo-wrap"><div class="tabungan-saldo-val">Rp ${fmtRp(Math.max(0,e.saldo))}</div><div class="tabungan-saldo-label">Saldo</div></div>
+      </div>
+      ${targetBar}
+      <div class="tabungan-stats">
+        <div><div class="tabungan-stat-label">Total Setor</div><div class="tabungan-stat-val" style="color:var(--teal)">Rp ${fmtRp(totalSetor)}</div></div>
+        <div><div class="tabungan-stat-label">Total Tarik</div><div class="tabungan-stat-val" style="color:var(--merah)">Rp ${fmtRp(totalTarik)}</div></div>
+        <div><div class="tabungan-stat-label">Saldo Bersih</div><div class="tabungan-stat-val" style="color:${e.saldo>0?'var(--teal)':'var(--merah)'}">Rp ${fmtRp(Math.max(0,e.saldo))}</div></div>
+      </div>
+      <div class="tabungan-actions">
+        <button class="btn btn-teal btn-kecil" onclick="openModalTarik('${e.nama}','${e.tipe}')">📤 Tarik</button>
+        <button class="btn btn-abu btn-kecil" onclick="toggleEl('ttx-${key}')">📜 Riwayat</button>
+        <button class="btn btn-merah btn-kecil" onclick="hapusTabungan('${e.nama}','${e.tipe}')">🗑</button>
+      </div>
+      <div class="cicilan-list" id="ttx-${key}">${txHtml}</div>
+    </div>`;
+  }).join('');
+}
+function openModalTarik(nama,tipe){
+  activeTabunganKey=nama+'|'+tipe;
+  const saldo=getSaldoTabungan(nama,tipe);
+  const tipeLabel={reguler:'Reguler',wajib:'Wajib',qurban:'Qurban',pendidikan:'Pendidikan','hari-raya':'Hari Raya'};
+  document.getElementById('modal-tarik-info').innerHTML=`<div class="modal-row"><span>Anggota:</span><b>${nama}</b></div><div class="modal-row"><span>Jenis:</span><b>${tipeLabel[tipe]||tipe}</b></div><div class="modal-row"><span>Saldo:</span><b style="color:var(--teal)">Rp ${fmtRp(Math.max(0,saldo))}</b></div>`;
+  document.getElementById('modal-tarik-jumlah').value='';
+  document.getElementById('modal-tarik-ket').value='';
+  document.getElementById('modal-tarik-tabungan').classList.add('open');
+}
+function closeModalTarik(){document.getElementById('modal-tarik-tabungan').classList.remove('open');activeTabunganKey=null;}
+function simpanTarikTabungan(){
+  if(!activeTabunganKey) return;
+  const [nama,tipe]=activeTabunganKey.split('|');
+  const jumlah=parseFloat(document.getElementById('modal-tarik-jumlah').value);
+  const ket=document.getElementById('modal-tarik-ket').value.trim();
+  if(!jumlah||jumlah<=0){showToast('⚠️ Masukkan jumlah!');return;}
+  if(jumlah>getSaldoTabungan(nama,tipe)){showToast('⚠️ Saldo tidak cukup!');return;}
+  tabdata.push({id:Date.now().toString(),nama,tipe,jenis:'tarik',jumlah,target:null,ket,tgl:new Date().toLocaleDateString('id-ID')});
+  save(); renderTabungan(); closeModalTarik();
+  showToast('✅ Tarik Rp '+fmtRp(jumlah)+' berhasil!');
+}
+function hapusTabungan(nama,tipe){
+  if(!confirm('Hapus semua riwayat tabungan '+nama+'?')) return;
+  tabdata=tabdata.filter(t=>!(t.nama===nama&&t.tipe===tipe)); save(); renderTabungan(); showToast('🗑 Tabungan dihapus');
+}
+
+// ===== DONATUR =====
+function tambahDonatur(){
+  const nama=document.getElementById('dn-nama').value.trim();
+  const hp=document.getElementById('dn-hp').value.trim();
+  const akad=document.getElementById('dn-akad').value;
+  const jumlah=parseFloat(document.getElementById('dn-jumlah').value);
+  const tujuan=document.getElementById('dn-tujuan').value;
+  const tanggal=document.getElementById('dn-tanggal').value;
+  const ket=document.getElementById('dn-ket').value.trim();
+  if(!nama||!jumlah||jumlah<=0){showToast('⚠️ Lengkapi data donasi!');return;}
+  dondata.unshift({id:Date.now().toString(),nama,hp,akad,jumlah,tujuan,tanggal,ket,tgl:new Date().toLocaleDateString('id-ID')});
+  save(); renderDonatur();
+  ['dn-nama','dn-hp','dn-jumlah','dn-ket'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('dn-tanggal').value=now.toISOString().split('T')[0];
+  showToast('🤲 Donasi '+nama+' dicatat! Jazakallah Khairan.');
+}
+function renderDonatur(){
+  const list=document.getElementById('donatur-list');
+  const q=(document.getElementById('search-donatur').value||'').toLowerCase();
+  // Group by nama
+  const map={};
+  dondata.forEach(d=>{
+    if(!map[d.nama]) map[d.nama]={nama:d.nama,hp:d.hp,total:0,hibah:0,infaq:0,donasi:[],lastAkad:d.akad};
+    map[d.nama].total+=d.jumlah;
+    if(d.akad==='hibah') map[d.nama].hibah+=d.jumlah;
+    else map[d.nama].infaq+=d.jumlah;
+    map[d.nama].donasi.push(d);
+    map[d.nama].lastAkad=d.akad;
+  });
+  let arr=Object.values(map);
+  if(activeDonFilter!=='semua') arr=arr.filter(a=>a.donasi.some(d=>d.akad===activeDonFilter));
+  if(q) arr=arr.filter(a=>a.nama.toLowerCase().includes(q));
+  if(arr.length===0){list.innerHTML=`<div class="empty-state"><div class="empty-icon">🤲</div><div class="empty-text">Belum ada data donatur.</div></div>`;return;}
+  list.innerHTML=arr.map(a=>{
+    const txHtml=a.donasi.slice().reverse().map(d=>`<div class="cicilan-item"><span class="cicilan-tgl">${d.tgl||d.tanggal}</span><span class="cicilan-jml" style="color:var(--oranye-muda)">+Rp ${fmtRp(d.jumlah)}</span><span class="cicilan-ket">${d.tujuan} · ${d.akad==='hibah'?'Hibah':'Infaq'} ${d.ket?'· '+d.ket:''}</span></div>`).join('');
+    const akadChips=[(a.hibah>0?`<span class="chip oranye">🎁 Hibah: Rp ${fmtRp(a.hibah)}</span>`:''),( a.infaq>0?`<span class="chip oranye">🌿 Infaq: Rp ${fmtRp(a.infaq)}</span>`:'')].filter(Boolean).join('');
+    return `<div class="donatur-card">
+      <div class="donatur-header">
+        <div><div class="donatur-nama">${a.nama}</div><div class="donatur-meta">${a.hp||'—'} · ${a.donasi.length} donasi</div><div style="margin-top:6px">${akadChips}</div></div>
+        <div class="donatur-total"><div class="donatur-total-val">Rp ${fmtRp(a.total)}</div><div class="donatur-total-label">Total Donasi</div></div>
+      </div>
+      <div class="donatur-actions">
+        <button class="btn btn-abu btn-kecil" onclick="toggleEl('dtx-${a.nama.replace(/\s/g,'_')}')">📜 Riwayat</button>
+        <button class="btn btn-merah btn-kecil" onclick="hapusDonatur('${a.nama}')">🗑</button>
+      </div>
+      <div class="cicilan-list" id="dtx-${a.nama.replace(/\s/g,'_')}">${txHtml}</div>
+    </div>`;
+  }).join('');
+}
+function hapusDonatur(nama){
+  if(!confirm('Hapus semua data donasi dari '+nama+'?')) return;
+  dondata=dondata.filter(d=>d.nama!==nama); save(); renderDonatur(); showToast('🗑 Data donatur dihapus');
+}
+
+// ===== INVESTOR =====
+function tambahInvestor(){
+  const nama=document.getElementById('iv-nama').value.trim();
+  const hp=document.getElementById('iv-hp').value.trim();
+  const akad=document.getElementById('iv-akad').value;
+  const nisbah=parseFloat(document.getElementById('iv-nisbah').value);
+  const modal=parseFloat(document.getElementById('iv-modal').value);
+  const jangka=parseInt(document.getElementById('iv-jangka').value);
+  const tanggal=document.getElementById('iv-tanggal').value;
+  const tujuan=document.getElementById('iv-tujuan').value;
+  const ket=document.getElementById('iv-ket').value.trim();
+  if(!nama||!modal||!nisbah||!jangka||!tanggal){showToast('⚠️ Lengkapi data investor!');return;}
+  if(nisbah<=0||nisbah>=100){showToast('⚠️ Nisbah harus antara 1-99%!');return;}
+  const jatuhTempo=tglPlus(tanggal,jangka);
+  invdata.unshift({id:Date.now().toString(),nama,hp,akad,nisbah,modal,jangka,tanggal,jatuhTempo,tujuan,ket,status:'aktif',catatanUpdate:[]});
+  save(); renderInvestor();
+  ['iv-nama','iv-hp','iv-nisbah','iv-modal','iv-jangka','iv-ket'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('iv-tanggal').value=now.toISOString().split('T')[0];
+  document.getElementById('preview-invest').style.display='none';
+  showToast('💼 Investor '+nama+' dicatat!');
+}
+function renderInvestor(){
+  const list=document.getElementById('investor-list');
+  const q=(document.getElementById('search-investor').value||'').toLowerCase();
+  let arr=invdata.slice();
+  if(activeInvFilter==='mudharabah') arr=arr.filter(i=>i.akad==='mudharabah');
+  else if(activeInvFilter==='musyarakah') arr=arr.filter(i=>i.akad==='musyarakah');
+  else if(activeInvFilter==='aktif') arr=arr.filter(i=>i.status==='aktif');
+  else if(activeInvFilter==='selesai') arr=arr.filter(i=>i.status==='selesai');
+  if(q) arr=arr.filter(i=>i.nama.toLowerCase().includes(q));
+  if(arr.length===0){list.innerHTML=`<div class="empty-state"><div class="empty-icon">💼</div><div class="empty-text">Belum ada data investor.</div></div>`;return;}
+  const statusLabel={aktif:'Aktif','jatuh-tempo':'Jatuh Tempo ⚠️',selesai:'Selesai ✓'};
+  const statusClass={'aktif':'inv-aktif','jatuh-tempo':'inv-jatuh-tempo','selesai':'inv-selesai'};
+  const akadLabel={mudharabah:'📈 Mudharabah',musyarakah:'🤝 Musyarakah'};
+  list.innerHTML=arr.map(i=>{
+    const txHtml=i.catatanUpdate&&i.catatanUpdate.length>0?i.catatanUpdate.slice().reverse().map(c=>`<div class="cicilan-item"><span class="cicilan-tgl">${c.tgl}</span><span class="cicilan-jml" style="color:var(--coklat-muda)">${statusLabel[c.status]||c.status}</span><span class="cicilan-ket">${c.ket||''}</span></div>`).join(''):'<div style="font-size:12px;color:var(--abu);padding:8px 0">Belum ada catatan update.</div>';
+    return `<div class="investor-card">
+      <div class="investor-header">
+        <div>
+          <div class="investor-nama">${i.nama}</div>
+          <div class="investor-meta">${i.hp||'—'}</div>
+          <div style="margin-top:6px">
+            <span class="chip coklat">${akadLabel[i.akad]}</span>
+            <span class="chip coklat">Nisbah Investor: ${i.nisbah}%</span>
+          </div>
+        </div>
+        <div style="text-align:right">
+          <div class="investor-modal-rp">Rp ${fmtRp(i.modal)}</div>
+          <div class="investor-modal-label">Modal</div>
+          <div style="margin-top:4px"><span class="investor-status-badge ${statusClass[i.status]||'inv-aktif'}">${statusLabel[i.status]||i.status}</span></div>
+        </div>
+      </div>
+      <div class="investor-grid">
+        <div><div class="investor-item-label">Jangka</div><div class="investor-item-val">${i.jangka} bulan</div></div>
+        <div><div class="investor-item-label">Mulai</div><div class="investor-item-val">${i.tanggal}</div></div>
+        <div><div class="investor-item-label">Jatuh Tempo</div><div class="investor-item-val" style="color:${i.status==='jatuh-tempo'?'var(--merah)':'var(--hitam)'}">${i.jatuhTempo}</div></div>
+      </div>
+      ${i.tujuan?`<div style="margin-bottom:10px"><span class="chip">${i.tujuan}</span></div>`:''}
+      ${i.ket?`<div style="font-size:12px;color:var(--abu);margin-bottom:10px;font-style:italic">"${i.ket}"</div>`:''}
+      <div class="investor-actions">
+        <button class="btn btn-coklat btn-kecil" onclick="openModalInvestor('${i.id}')">✏️ Update Status</button>
+        <button class="btn btn-abu btn-kecil" onclick="toggleEl('ivtx-${i.id}')">📜 Riwayat</button>
+        <button class="btn btn-merah btn-kecil" onclick="hapusInvestor('${i.id}')">🗑</button>
+      </div>
+      <div class="cicilan-list" id="ivtx-${i.id}">${txHtml}</div>
+    </div>`;
+  }).join('');
+}
+function openModalInvestor(id){
+  activeInvestorId=id;
+  const i=invdata.find(x=>x.id===id);
+  document.getElementById('modal-iv-info').innerHTML=`<div class="modal-row"><span>Investor:</span><b>${i.nama}</b></div><div class="modal-row"><span>Modal:</span><b>Rp ${fmtRp(i.modal)}</b></div><div class="modal-row"><span>Akad:</span><b>${i.akad==='mudharabah'?'Mudharabah':'Musyarakah'}</b></div><div class="modal-row"><span>Jatuh Tempo:</span><b>${i.jatuhTempo}</b></div>`;
+  document.getElementById('modal-iv-status').value=i.status;
+  document.getElementById('modal-iv-ket').value='';
+  document.getElementById('modal-status-investor').classList.add('open');
+}
+function closeModalInvestor(){document.getElementById('modal-status-investor').classList.remove('open');activeInvestorId=null;}
+function simpanStatusInvestor(){
+  if(!activeInvestorId) return;
+  const status=document.getElementById('modal-iv-status').value;
+  const ket=document.getElementById('modal-iv-ket').value.trim();
+  const idx=invdata.findIndex(x=>x.id===activeInvestorId);
+  invdata[idx].status=status;
+  if(!invdata[idx].catatanUpdate) invdata[idx].catatanUpdate=[];
+  invdata[idx].catatanUpdate.push({tgl:new Date().toLocaleDateString('id-ID'),status,ket});
+  save(); renderInvestor(); closeModalInvestor();
+  showToast('✅ Status investor diperbarui!');
+}
+function hapusInvestor(id){
+  if(!confirm('Hapus data investor ini?')) return;
+  invdata=invdata.filter(x=>x.id!==id); save(); renderInvestor(); showToast('🗑 Data investor dihapus');
+}
+
+// ===== LAPORAN =====
+function renderLaporan(){
+  let total=0,kembali=0,sisa=0,ujrahTotal=0,aktif=0,macet=0,lunas=0,mudh=0;
+  let macetList=[];
+  data.forEach(p=>{
+    const ujrah=p.akad==='mudharabah'?0:p.ujrah;
+    const tp=p.jumlah+ujrah; const tc=p.cicilan.reduce((a,c)=>a+c.jumlah,0);
+    total+=p.jumlah; kembali+=tc; ujrahTotal+=ujrah;
+    if(p.status!=='lunas') sisa+=Math.max(0,tp-tc);
+    if(p.status==='aktif') aktif++;
+    else if(p.status==='macet'){macet++;macetList.push(p);}
+    else lunas++;
+    if(p.akad==='mudharabah'&&p.status==='aktif') mudh++;
+  });
+  const wadTot=wadata.reduce((a,w)=>w.jenis==='setor'?a+w.jumlah:a-w.jumlah,0);
+  const tabTot=tabdata.reduce((a,t)=>t.jenis==='setor'?a+t.jumlah:a-t.jumlah,0);
+  const donTot=dondata.reduce((a,d)=>a+d.jumlah,0);
+  const donHibah=dondata.filter(d=>d.akad==='hibah').reduce((a,d)=>a+d.jumlah,0);
+  const donInfaq=dondata.filter(d=>d.akad==='infaq').reduce((a,d)=>a+d.jumlah,0);
+  const invTot=invdata.reduce((a,i)=>a+i.modal,0);
+  const invMudh=invdata.filter(i=>i.akad==='mudharabah').reduce((a,i)=>a+i.modal,0);
+  const invMush=invdata.filter(i=>i.akad==='musyarakah').reduce((a,i)=>a+i.modal,0);
+  const ivAktif=invdata.filter(i=>i.status==='aktif').length;
+  const ivSelesai=invdata.filter(i=>i.status==='selesai').length;
+  const penabungSet=new Set(tabdata.map(t=>t.nama));
+  const donSet=new Set(dondata.map(d=>d.nama));
+
+  document.getElementById('lap-total').textContent='Rp '+fmtRp(total);
+  document.getElementById('lap-kembali').textContent='Rp '+fmtRp(kembali);
+  document.getElementById('lap-sisa').textContent='Rp '+fmtRp(Math.max(0,sisa));
+  document.getElementById('lap-ujrah').textContent='Rp '+fmtRp(ujrahTotal);
+  document.getElementById('lap-wadiah').textContent='Rp '+fmtRp(Math.max(0,wadTot));
+  document.getElementById('lap-tabungan').textContent='Rp '+fmtRp(Math.max(0,tabTot));
+  document.getElementById('lap-donatur').textContent='Rp '+fmtRp(donTot);
+  document.getElementById('lap-investor').textContent='Rp '+fmtRp(invTot);
+  document.getElementById('lap-dn-hibah').textContent='Rp '+fmtRp(donHibah);
+  document.getElementById('lap-dn-infaq').textContent='Rp '+fmtRp(donInfaq);
+  document.getElementById('lap-dn-count').textContent=donSet.size+' orang';
+  document.getElementById('lap-iv-mudh').textContent='Rp '+fmtRp(invMudh);
+  document.getElementById('lap-iv-mush').textContent='Rp '+fmtRp(invMush);
+  document.getElementById('lap-iv-aktif').textContent=ivAktif;
+  document.getElementById('lap-iv-selesai').textContent=ivSelesai;
+  document.getElementById('lap-pendamping').textContent='Rp '+fmtRp(ujrahTotal*0.5);
+  document.getElementById('lap-ops').textContent='Rp '+fmtRp(ujrahTotal*0.31);
+  document.getElementById('lap-cadangan').textContent='Rp '+fmtRp(ujrahTotal*0.19);
+  document.getElementById('lap-aktif').textContent=aktif;
+  document.getElementById('lap-macet').textContent=macet;
+  document.getElementById('lap-lunas').textContent=lunas;
+  document.getElementById('lap-mudh').textContent=mudh;
+  const macetWrap=document.getElementById('lap-macet-wrap');
+  if(macetList.length>0){
+    macetWrap.style.display='block';
+    document.getElementById('lap-macet-list').innerHTML=macetList.map(p=>`<div class="laporan-row"><span class="label">${p.nama}<br><small>${p.alamat||''}</small></span><span class="val merah">Rp ${fmtRp(Math.max(0,(p.jumlah+p.ujrah)-p.cicilan.reduce((a,c)=>a+c.jumlah,0)))}</span></div>`).join('');
+  } else { macetWrap.style.display='none'; }
+}
+
+function exportLaporan(){
+  const tgl=new Date().toLocaleDateString('id-ID',{day:'2-digit',month:'long',year:'numeric'});
+  let total=0,kembali=0,sisa=0,ujrahTotal=0,aktif=0,macet=0,lunas=0;
+  data.forEach(p=>{const ujrah=p.akad==='mudharabah'?0:p.ujrah;const tp=p.jumlah+ujrah;const tc=p.cicilan.reduce((a,c)=>a+c.jumlah,0);total+=p.jumlah;kembali+=tc;ujrahTotal+=ujrah;if(p.status!=='lunas')sisa+=Math.max(0,tp-tc);if(p.status==='aktif')aktif++;else if(p.status==='macet')macet++;else lunas++;});
+  const wadTot=wadata.reduce((a,w)=>w.jenis==='setor'?a+w.jumlah:a-w.jumlah,0);
+  const tabTot=tabdata.reduce((a,t)=>t.jenis==='setor'?a+t.jumlah:a-t.jumlah,0);
+  const donTot=dondata.reduce((a,d)=>a+d.jumlah,0);
+  const invTot=invdata.reduce((a,i)=>a+i.modal,0);
+  const penabungSet=new Set(tabdata.map(t=>t.nama));
+  const donSet=new Set(dondata.map(d=>d.nama));
+  const teks=`📊 LAPORAN KAS TAMARA\nBahula Tani Nusantara — Gunungguruh\nTanggal: ${tgl}\n━━━━━━━━━━━━━━━━━━━━━\n💰 Disalurkan     : Rp ${fmtRp(total)}\n✅ Kembali        : Rp ${fmtRp(kembali)}\n⚠️ Sisa Piutang   : Rp ${fmtRp(Math.max(0,sisa))}\n🕌 Ujrah Terkumpul: Rp ${fmtRp(ujrahTotal)}\n💜 Wadiah Mengendap: Rp ${fmtRp(Math.max(0,wadTot))}\n🏦 Total Tabungan : Rp ${fmtRp(Math.max(0,tabTot))} (${penabungSet.size} penabung)\n🤲 Total Donasi   : Rp ${fmtRp(donTot)} (${donSet.size} donatur)\n💼 Modal Investor : Rp ${fmtRp(invTot)} (${invdata.length} investor)\n━━━━━━━━━━━━━━━━━━━━━\n👥 Aktif: ${aktif} | Macet: ${macet} | Lunas: ${lunas}\n━━━━━━━━━━━━━━━━━━━━━\n📋 Alokasi Ujrah:\n   Pendamping (50%): Rp ${fmtRp(ujrahTotal*0.5)}\n   Kas BTN   (31%): Rp ${fmtRp(ujrahTotal*0.31)}\n   Cadangan  (19%): Rp ${fmtRp(ujrahTotal*0.19)}\n━━━━━━━━━━━━━━━━━━━━━`;
+  navigator.clipboard.writeText(teks).then(()=>showToast('📋 Laporan disalin!')).catch(()=>showToast('⚠️ Gagal salin'));
+}
+function exportWA(){
+  const tgl=new Date().toLocaleDateString('id-ID',{day:'2-digit',month:'long',year:'numeric'});
+  let total=0,kembali=0,sisa=0,ujrahTotal=0,aktif=0,macet=0,lunas=0;
+  data.forEach(p=>{const ujrah=p.akad==='mudharabah'?0:p.ujrah;const tp=p.jumlah+ujrah;const tc=p.cicilan.reduce((a,c)=>a+c.jumlah,0);total+=p.jumlah;kembali+=tc;ujrahTotal+=ujrah;if(p.status!=='lunas')sisa+=Math.max(0,tp-tc);if(p.status==='aktif')aktif++;else if(p.status==='macet')macet++;else lunas++;});
+  const donTot=dondata.reduce((a,d)=>a+d.jumlah,0);
+  const invTot=invdata.reduce((a,i)=>a+i.modal,0);
+  const tabTot=tabdata.reduce((a,t)=>t.jenis==='setor'?a+t.jumlah:a-t.jumlah,0);
+  const teks=encodeURIComponent(`📊 *LAPORAN KAS TAMARA*\nBahula Tani Nusantara — ${tgl}\n\n💰 Disalurkan: Rp ${fmtRp(total)}\n✅ Kembali: Rp ${fmtRp(kembali)}\n⚠️ Sisa: Rp ${fmtRp(Math.max(0,sisa))}\n🕌 Ujrah: Rp ${fmtRp(ujrahTotal)}\n🏦 Tabungan: Rp ${fmtRp(Math.max(0,tabTot))}\n🤲 Donasi: Rp ${fmtRp(donTot)}\n💼 Investor: Rp ${fmtRp(invTot)}\n\nAktif: ${aktif} | Macet: ${macet} | Lunas: ${lunas}\n\n_TAMARA — Bahula Tani Nusantara 🌾_`);
+  window.open(`https://wa.me/6283971666136?text=${teks}`,'_blank');
+}
+
+// ===== TOAST =====
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2500);
+}
+</script>
+</body>
+</html>
